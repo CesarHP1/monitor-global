@@ -553,6 +553,242 @@ function Clock({ ac, loc }) {
   );
 }
 
+// ── EMERGENCY ALERT SYSTEM ────────────────────────────────────────────────────
+// Umbrales: solo eventos que requieren acción inmediata
+
+// Distancia en km entre dos puntos (Haversine)
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// Tsunami risk zones (costas de México y Pacífico)
+const TSUNAMI_ZONES=[
+  {name:"Guerrero",lat:17.5,lng:-101},{name:"Oaxaca costa",lat:15.9,lng:-97},
+  {name:"Jalisco costa",lat:19.1,lng:-104},{name:"Colima costa",lat:18.9,lng:-104.2},
+  {name:"Michoacán costa",lat:18.1,lng:-102.8},{name:"Chiapas costa",lat:15.5,lng:-93},
+  {name:"Sinaloa costa",lat:24.8,lng:-107.4},{name:"Nayarit costa",lat:21.5,lng:-105},
+  {name:"Pacífico MX",lat:20,lng:-105},{name:"Océano Índico",lat:5,lng:95},
+  {name:"Japón Pacífico",lat:38,lng:143},{name:"Chile costa",lat:-30,lng:-71},
+];
+
+function isTsunamiRisk(lat,lng,mag){
+  if(mag<7.5)return false;
+  // Solo costas y zonas de subducción
+  const oceanicLat=lat>-60&&lat<60;
+  if(!oceanicLat)return false;
+  const nearCoast=TSUNAMI_ZONES.some(z=>haversine(lat,lng,z.lat,z.lng)<400);
+  return nearCoast;
+}
+
+// Etiqueta de severidad por modo
+const ALERT_LEVELS={
+  ROJO:{label:"🔴 ALERTA MÁXIMA",color:"#ff0000",bg:"#200000"},
+  NARANJA:{label:"🟠 ALERTA CRÍTICA",color:"#ff6600",bg:"#1a0800"},
+  AMARILLO:{label:"🟡 ALERTA URGENTE",color:"#ffcc00",bg:"#1a1200"},
+};
+
+// Hook principal
+function useEmergencyAlerts(mode, quakes, hurricanes){
+  const [alerts,setAlerts]=useState([]);
+  const shownIds=useRef(new Set());
+  const audioRef=useRef(null);
+
+  const getCtx=useCallback(()=>{
+    if(!audioRef.current)audioRef.current=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioRef.current.state==="suspended")audioRef.current.resume();
+    return audioRef.current;
+  },[]);
+
+  const playEmergencySound=useCallback((level)=>{
+    try{
+      const c=getCtx(),t=c.currentTime;
+      const freqs=level==="ROJO"?[880,1047,880,1320]:[660,880,660];
+      freqs.forEach((f,i)=>{
+        const o=c.createOscillator(),g=c.createGain();
+        o.connect(g);g.connect(c.destination);
+        o.type="square";o.frequency.value=f;
+        const dl=i*0.18;
+        g.gain.setValueAtTime(0,t+dl);
+        g.gain.linearRampToValueAtTime(0.18,t+dl+0.04);
+        g.gain.exponentialRampToValueAtTime(0.001,t+dl+0.16);
+        o.start(t+dl);o.stop(t+dl+0.17);
+      });
+    }catch(e){}
+  },[getCtx]);
+
+  const pushAlert=useCallback((alert)=>{
+    if(shownIds.current.has(alert.id))return;
+    shownIds.current.add(alert.id);
+    playEmergencySound(alert.level);
+    setTimeout(()=>speakText(alert.voice,1.1),300);
+    setAlerts(prev=>[{...alert,ts:Date.now()},...prev].slice(0,4));
+  },[playEmergencySound]);
+
+  const dismiss=useCallback((id)=>{
+    setAlerts(prev=>prev.filter(a=>a.id!==id));
+  },[]);
+
+  // Auto-dismiss 5 minutos
+  useEffect(()=>{
+    const iv=setInterval(()=>{
+      const now=Date.now();
+      setAlerts(prev=>prev.filter(a=>(now-a.ts)<5*60*1000));
+    },10000);
+    return()=>clearInterval(iv);
+  },[]);
+
+  // ── CLIMA: Sismos M7+ (polling 60s) ──────────────────────────────────────
+  useEffect(()=>{
+    if(mode!=="climate"&&mode!=="war")return;
+    const checkQuakes=async()=>{
+      try{
+        const r=await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.geojson");
+        const d=await r.json();
+        const now=Date.now();
+        d.features.forEach(f=>{
+          const mag=f.properties.mag,place=f.properties.place||"zona desconocida";
+          const lat=f.geometry.coordinates[1],lng=f.geometry.coordinates[0];
+          const age=(now-f.properties.time)/60000; // minutos
+          if(age>120)return; // solo últimas 2 horas
+          if(mag<7)return;
+          const id=`quake_${f.id}`;
+          const tsunami=isTsunamiRisk(lat,lng,mag);
+          const mxClose=haversine(lat,lng,23.6345,-102.5528)<2500;
+          const level=mag>=8?"ROJO":mag>=7.5?"NARANJA":"AMARILLO";
+          pushAlert({
+            id,level,
+            mode:["climate","war"],
+            icon:tsunami?"🌊🌋":"🌋",
+            title:`SISMO M${mag.toFixed(1)} — ${place.toUpperCase()}`,
+            detail:`${tsunami?"⚠️ ALERTA DE TSUNAMI ACTIVA — ":""}Magnitud ${mag.toFixed(1)} registrado hace ${Math.round(age)} minuto${age>=2?"s":""}. Profundidad: ${Math.round(f.geometry.coordinates[2])} km.${mxClose?" Posible impacto en México.":""}`,
+            voice:tsunami
+              ?`Atención. Sismo de magnitud ${mag.toFixed(1)} en ${place}. Alerta de tsunami activa. Aléjate inmediatamente de las costas. Este es un evento de máxima peligrosidad.`
+              :`Alerta sísmica. Sismo de magnitud ${mag.toFixed(1)} en ${place}. Profundidad de ${Math.round(f.geometry.coordinates[2])} kilómetros.${mxClose?" Posible impacto en México.":""}`,
+          });
+        });
+      }catch(e){}
+    };
+    checkQuakes();
+    const iv=setInterval(checkQuakes,60*1000); // cada 60 segundos
+    return()=>clearInterval(iv);
+  },[mode,pushAlert]);
+
+  // ── CLIMA: Huracán Cat3+ acercándose a México ─────────────────────────────
+  useEffect(()=>{
+    if(mode!=="climate")return;
+    hurricanes.forEach(h=>{
+      if(h.kts<96)return; // Cat3+ = 96+ kts
+      const dist=haversine(h.lat,h.lng,23.6345,-102.5528);
+      if(dist>1800)return;
+      const id=`hur_alert_${h.id}_cat${hurCat(h.kts)}`;
+      const level=h.kts>=137?"ROJO":h.kts>=113?"NARANJA":"AMARILLO";
+      const cat=hurCat(h.kts);
+      const costas=dist<600?"Veracruz, Tamaulipas y Yucatán en riesgo directo":dist<1000?"Costas del Golfo en alerta":"Posible trayectoria hacia México";
+      pushAlert({
+        id,level,
+        mode:["climate"],
+        icon:"🌀",
+        title:`HURACÁN ${h.name} ${cat} AMENAZA MÉXICO`,
+        detail:`${cat} con vientos de ${Math.round(h.kts*1.852)} km/h a ${Math.round(dist)} km de México. ${costas}. Fuente: NOAA NHC.`,
+        voice:`Alerta máxima. Huracán ${h.name} categoría ${cat.replace("CAT","")} con vientos de ${Math.round(h.kts*1.852)} kilómetros por hora. Distancia a México: ${Math.round(dist)} kilómetros. ${costas}. Prepara tu mochila de emergencia y sigue las instrucciones de Protección Civil.`,
+      });
+    });
+  },[mode,hurricanes,pushAlert]);
+
+  // ── GUERRA, ENFERMEDAD, ECONOMÍA: IA cada 8 min ───────────────────────────
+  useEffect(()=>{
+    if(mode==="climate")return;
+    const PROMPTS={
+      war:`Revisa noticias de los últimos 30 minutos. ¿Ocurrió alguno de estos eventos AHORA MISMO: uso de arma nuclear o radiológica, ataque con armas biológicas/químicas, nuevo país grande (Rusia, China, OTAN) entrando oficialmente en guerra, misil balístico intercontinental lanzado, alto al fuego o paz firmada? Responde SOLO JSON sin markdown: {"alert":false} o {"alert":true,"level":"ROJO|NARANJA","title":"máx 8 palabras","detail":"máx 25 palabras","voice":"máx 30 palabras para leer en voz alta"}`,
+      disease:`Revisa noticias últimos 30 minutos. ¿Ocurrió: nueva pandemia declarada por OMS, brote de enfermedad con mortalidad >40% confirmado en México o EE.UU., variante viral nueva con resistencia a vacunas confirmada, o brote de ébola/viruela/marburg en ciudad con más de 1 millón de habitantes? Responde SOLO JSON sin markdown: {"alert":false} o {"alert":true,"level":"ROJO|NARANJA","title":"máx 8 palabras","detail":"máx 25 palabras","voice":"máx 30 palabras"}`,
+      news:`Revisa noticias financieras últimos 30 minutos. ¿Ocurrió: circuit breaker activado en NYSE/Nasdaq/mercados globales, devaluación del peso mayor al 8% en un día, precio del petróleo subió más del 15% en una hora, quiebra de banco sistémico importante (tipo Lehman), o suspensión total del dólar como reserva mundial? Responde SOLO JSON sin markdown: {"alert":false} o {"alert":true,"level":"NARANJA|AMARILLO","title":"máx 8 palabras","detail":"máx 25 palabras","voice":"máx 30 palabras"}`,
+    };
+    const check=async()=>{
+      const prompt=PROMPTS[mode];
+      if(!prompt)return;
+      try{
+        const r=await fetch("https://api.anthropic.com/v1/messages",{
+          method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:160,
+            tools:[{type:"web_search_20250305",name:"web_search"}],
+            messages:[{role:"user",content:prompt}]})
+        });
+        const data=await r.json();
+        const raw=data.content?.filter(b=>b.type==="text").map(b=>b.text).join("").trim();
+        if(!raw)return;
+        const clean=raw.replace(/```json|```/g,"").trim();
+        const parsed=JSON.parse(clean);
+        if(!parsed.alert)return;
+        const id=`ai_${mode}_${Date.now().toString(36)}`;
+        const iconMap={war:"⚔️💥",disease:"☣️🦠",news:"📉💸"};
+        pushAlert({
+          id,
+          level:parsed.level||"NARANJA",
+          mode:[mode],
+          icon:iconMap[mode]||"⚠️",
+          title:parsed.title||"ALERTA CRÍTICA",
+          detail:parsed.detail||"",
+          voice:parsed.voice||parsed.title||"Alerta crítica detectada.",
+        });
+      }catch(e){}
+    };
+    check();
+    const iv=setInterval(check,8*60*1000); // cada 8 minutos
+    return()=>clearInterval(iv);
+  },[mode,pushAlert]);
+
+  return{alerts,dismiss};
+}
+
+// ── EMERGENCY BANNER ──────────────────────────────────────────────────────────
+function EmergencyBanner({alerts,dismiss,mode}){
+  const [ticks,setTicks]=useState(0);
+  useEffect(()=>{const iv=setInterval(()=>setTicks(t=>t+1),1000);return()=>clearInterval(iv);},[]);
+  const visible=alerts.filter(a=>!a.mode||a.mode.includes(mode));
+  if(!visible.length)return null;
+  return(
+    <div style={{position:"fixed",top:0,left:0,right:0,zIndex:9999,display:"flex",flexDirection:"column",gap:"2px",pointerEvents:"none"}}>
+      {visible.map(a=>{
+        const lvl=ALERT_LEVELS[a.level]||ALERT_LEVELS.NARANJA;
+        const elapsed=Math.floor((Date.now()-a.ts)/1000);
+        const remaining=Math.max(0,300-elapsed);
+        const mins=Math.floor(remaining/60),secs=remaining%60;
+        const pulse=Math.floor(elapsed/1)%2===0;
+        return(
+          <div key={a.id} style={{
+            background:lvl.bg,
+            borderBottom:`3px solid ${lvl.color}`,
+            padding:"10px 16px",
+            display:"flex",alignItems:"center",gap:"12px",
+            pointerEvents:"all",
+            boxShadow:`0 4px 30px ${lvl.color}66`,
+            animation:"slideDown 0.3s ease",
+          }}>
+            {/* Icono pulsante */}
+            <span style={{fontSize:"24px",opacity:pulse?1:0.5,transition:"opacity 0.3s",flexShrink:0}}>{a.icon}</span>
+            {/* Texto */}
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
+                <span style={{fontSize:"8px",background:lvl.color,color:"#000",padding:"2px 7px",borderRadius:"2px",fontWeight:"900",letterSpacing:"2px",flexShrink:0}}>{lvl.label}</span>
+                <span style={{fontSize:"13px",fontWeight:"900",color:lvl.color,letterSpacing:"1px",textShadow:`0 0 12px ${lvl.color}`,fontFamily:"'Courier New',monospace"}}>{a.title}</span>
+              </div>
+              <div style={{fontSize:"9px",color:"#ccc",marginTop:"3px",lineHeight:"1.4"}}>{a.detail}</div>
+            </div>
+            {/* Timer + close */}
+            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"4px",flexShrink:0}}>
+              <button onClick={()=>dismiss(a.id)} style={{background:"none",border:`1px solid ${lvl.color}44`,borderRadius:"3px",color:lvl.color,cursor:"pointer",fontSize:"13px",lineHeight:1,padding:"2px 7px",fontFamily:"'Courier New',monospace"}}>✕</button>
+              <div style={{fontSize:"8px",color:`${lvl.color}88`,fontFamily:"'Courier New',monospace",letterSpacing:"1px"}}>{mins}:{String(secs).padStart(2,"0")}</div>
+              <button onClick={()=>speakText(a.voice,1.1)} style={{background:"none",border:`1px solid ${lvl.color}22`,borderRadius:"2px",color:`${lvl.color}88`,cursor:"pointer",fontSize:"7px",padding:"1px 4px"}}>🔊</button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── ICON BAR ──────────────────────────────────────────────────────────────────
 function IconBar({quakes,hurricanes,noaaChecked,wlive,mode,ac}){
   const icons=[];
@@ -627,6 +863,7 @@ export default function App(){
   const{playHover,playUI}=useAudio();
   const ac=ACC[mode],bg=BG[mode],isoM=ISO_COL[mode]||{};
   const modeCountryData=ALL_COUNTRY_DATA[mode]||{};
+  const{alerts,dismiss}=useEmergencyAlerts(mode,quakes,hurricanes);
 
   const clmPoints=[...BASE_CLIMATE,...quakes.map(q=>({id:`q_${q.id}`,name:`SISMO M${q.mag.toFixed(1)}\n${q.place.split(",")[0].substring(0,12).toUpperCase()}`,lat:q.lat,lng:q.lng,c:magCol(q.mag),s:Math.min(5,Math.round(q.mag-3)),st:"extremo",icon:"🌋",pulse:q.mag>=6,fecha:new Date(q.time).toLocaleDateString("es-MX",{day:"2-digit",month:"short"}).toUpperCase(),det:`Sismo M${q.mag.toFixed(1)} en ${q.place}. Profundidad: ${q.depth}km. ${q.mag>=7?"⚠️ ALERTA TSUNAMI ACTIVA.":q.mag>=6?"Monitoreo de tsunami activo.":"Sin riesgo de tsunami."} USGS ${new Date(q.time).toLocaleString("es-MX")}`})),...hurricanes.map(h=>{const pos=hurPos[h.id]||{lat:h.lat,lng:h.lng};return{id:`hur_${h.id}`,name:`🌀 ${h.name}\n${hurCat(h.kts)}`,lat:pos.lat,lng:pos.lng,c:hurCol(h.kts),s:5,st:"extremo",icon:"🌀",pulse:true,fecha:"NOAA LIVE",det:`Huracán ${h.name} — ${hurCat(h.kts)}. ${Math.round(h.kts*1.852)} km/h. Pos: ${pos.lat?.toFixed(2)}°, ${pos.lng?.toFixed(2)}°. NOAA NHC.`};})];
 
@@ -666,6 +903,7 @@ export default function App(){
 
   return(
     <div style={{background:bg,minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",padding:"10px 8px 14px",fontFamily:"'Courier New',monospace",color:"#fff",transition:"background 0.5s",userSelect:"none"}}>
+      <EmergencyBanner alerts={alerts} dismiss={dismiss} mode={mode}/>
 
       {/* TOP */}
       <div style={{width:"100%",maxWidth:"980px",marginBottom:"7px",display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"8px"}}>
@@ -767,6 +1005,7 @@ export default function App(){
         @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
         @keyframes rippleOut{0%{transform:scale(0.1);opacity:1}100%{transform:scale(4.5);opacity:0}}
         @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:translateY(0)}}
         @keyframes ticker{0%{transform:translateX(100%)}100%{transform:translateX(-270%)}}
         @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
       `}</style>
