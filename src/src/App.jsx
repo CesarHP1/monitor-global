@@ -659,7 +659,7 @@ function useEmergencyAlerts(mode, quakes, hurricanes){
           const level=mag>=8?"ROJO":mag>=7.5?"NARANJA":"AMARILLO";
           pushAlert({
             id,level,
-            mode:["climate","war"],
+            
             icon:tsunami?"🌊🌋":"🌋",
             title:`SISMO M${mag.toFixed(1)} — ${place.toUpperCase()}`,
             detail:`${tsunami?"⚠️ ALERTA DE TSUNAMI ACTIVA — ":""}Magnitud ${mag.toFixed(1)} registrado hace ${Math.round(age)} minuto${age>=2?"s":""}. Profundidad: ${Math.round(f.geometry.coordinates[2])} km.${mxClose?" Posible impacto en México.":""}`,
@@ -688,7 +688,7 @@ function useEmergencyAlerts(mode, quakes, hurricanes){
       const costas=dist<600?"Veracruz, Tamaulipas y Yucatán en riesgo directo":dist<1000?"Costas del Golfo en alerta":"Posible trayectoria hacia México";
       pushAlert({
         id,level,
-        mode:["climate"],
+        
         icon:"🌀",
         title:`HURACÁN ${h.name} ${cat} AMENAZA MÉXICO`,
         detail:`${cat} con vientos de ${Math.round(h.kts*1.852)} km/h a ${Math.round(dist)} km de México. ${costas}. Fuente: NOAA NHC.`,
@@ -726,7 +726,7 @@ function useEmergencyAlerts(mode, quakes, hurricanes){
         pushAlert({
           id,
           level:parsed.level||"NARANJA",
-          mode:[mode],
+          
           icon:iconMap[mode]||"⚠️",
           title:parsed.title||"ALERTA CRÍTICA",
           detail:parsed.detail||"",
@@ -746,7 +746,7 @@ function useEmergencyAlerts(mode, quakes, hurricanes){
 function EmergencyBanner({alerts,dismiss,mode}){
   const [ticks,setTicks]=useState(0);
   useEffect(()=>{const iv=setInterval(()=>setTicks(t=>t+1),1000);return()=>clearInterval(iv);},[]);
-  const visible=alerts.filter(a=>!a.mode||a.mode.includes(mode));
+  const visible=alerts; // todas las alertas en todas las vistas
   if(!visible.length)return null;
   return(
     <div style={{position:"fixed",top:0,left:0,right:0,zIndex:9999,display:"flex",flexDirection:"column",gap:"2px",pointerEvents:"none"}}>
