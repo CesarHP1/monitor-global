@@ -354,15 +354,17 @@ function useGeoLocation() {
 function WeatherWidget({ ac, loc }) {
   const [wx, setWx] = useState(null);
   const [rain, setRain] = useState(null);
+  const [aqi, setAqi] = useState(null); // calidad del aire
 
   useEffect(() => {
     if (!loc?.lat) return;
     const load = async () => {
       try {
-        const r = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lng}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m&hourly=precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=${encodeURIComponent(loc.tz)}&forecast_days=2`
-        );
-        const d = await r.json();
+        const [wxR, aqR] = await Promise.all([
+          fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lng}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,precipitation,rain,showers,snowfall&hourly=precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=${encodeURIComponent(loc.tz)}&forecast_days=2`),
+          fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${loc.lat}&longitude=${loc.lng}&current=european_aqi,pm10,pm2_5&timezone=${encodeURIComponent(loc.tz)}`),
+        ]);
+        const d = await wxR.json();
         setWx(d);
         setRain(null);
         const hr = d.hourly;
@@ -376,6 +378,10 @@ function WeatherWidget({ ac, loc }) {
             }
           }
         }
+        try {
+          const aq = await aqR.json();
+          if (aq?.current) setAqi(aq.current);
+        } catch (e) {}
       } catch (e) {}
     };
     load();
@@ -391,12 +397,57 @@ function WeatherWidget({ ac, loc }) {
     const desc = wmoText(c.weather_code);
     const hum = c.relative_humidity_2m;
     const wind = Math.round(c.wind_speed_10m);
+    const gusts = Math.round(c.wind_gusts_10m || 0);
+    const precip = c.precipitation || 0;
+    const rain_mm = c.rain || 0;
+    const snow = c.snowfall || 0;
+    const code = c.weather_code;
     const tmax = wx.daily ? Math.round(wx.daily.temperature_2m_max[0]) : "?";
     const tmin = wx.daily ? Math.round(wx.daily.temperature_2m_min[0]) : "?";
     const rainPct = wx.daily ? wx.daily.precipitation_probability_max[0] : 0;
-    let txt = `Clima actual en ${loc.municipio}. ${desc}. Temperatura: ${temp} grados, sensación térmica de ${feels} grados. Humedad: ${hum} por ciento. Viento: ${wind} kilómetros por hora. Máxima de hoy: ${tmax} grados. Mínima: ${tmin} grados. Probabilidad de lluvia hoy: ${rainPct} por ciento.`;
-    if (rain) txt += ` Se esperan lluvias aproximadamente a las ${rain.hour} horas con un ${rain.prob} por ciento de probabilidad.`;
-    else if (rainPct < 20) txt += " No se esperan lluvias hoy.";
+    const mun = loc?.municipio || "tu ubicación";
+
+    // ── Detectar condición actual ──────────────────────────────────────────
+    const conditions = [];
+    // Lluvia activa
+    if (rain_mm > 0) conditions.push(`está lloviendo ahora mismo, con ${rain_mm.toFixed(1)} milímetros de lluvia registrados`);
+    else if (precip > 0 && code <= 77) conditions.push(`hay precipitación activa de ${precip.toFixed(1)} milímetros`);
+    // Nieve
+    if (snow > 0) conditions.push(`está nevando actualmente con ${snow.toFixed(1)} centímetros de nieve`);
+    // Tormenta eléctrica
+    if (code >= 95) conditions.push(`hay tormenta eléctrica activa con rayos y truenos`);
+    else if (code >= 80 && code <= 94) conditions.push(`hay chubascos y lluvias intermitentes`);
+    // Niebla
+    if (code >= 45 && code <= 48) conditions.push(`hay niebla o neblina, con visibilidad reducida`);
+    // Viento fuerte
+    if (wind > 50) conditions.push(`hay vientos muy fuertes de ${wind} kilómetros por hora`);
+    else if (wind > 30) conditions.push(`hay viento moderado a fuerte de ${wind} kilómetros por hora`);
+    if (gusts > 60) conditions.push(`ráfagas de hasta ${gusts} kilómetros por hora`);
+    // Calor/frío extremo
+    if (temp >= 35) conditions.push(`temperatura extremadamente alta de ${temp} grados, riesgo de golpe de calor`);
+    else if (temp <= 0) conditions.push(`temperatura bajo cero, riesgo de heladas y superficies resbalosas`);
+    else if (temp <= 5) conditions.push(`temperatura muy baja, cerca de la congelación`);
+    // Sin evento
+    if (conditions.length === 0) conditions.push(`el clima está tranquilo y sin eventos severos activos`);
+
+    // ── Calidad del aire ──────────────────────────────────────────────────
+    let aqiTxt = "";
+    if (aqi?.european_aqi != null) {
+      const v = aqi.european_aqi;
+      const label = v <= 20 ? "buena" : v <= 40 ? "aceptable" : v <= 60 ? "moderada" : v <= 80 ? "mala" : v <= 100 ? "muy mala" : "extremadamente mala";
+      const pm25 = aqi.pm2_5 != null ? ` con partículas PM dos punto cinco de ${aqi.pm2_5.toFixed(1)} microgramos por metro cúbico` : "";
+      aqiTxt = ` La calidad del aire en ${mun} es ${label}, con índice de calidad ${v}${pm25}.`;
+    }
+
+    // ── Construir texto final ──────────────────────────────────────────────
+    const condTxt = conditions.join(". Además, ");
+    let txt = `Estado actual del clima en ${mun}: ${condTxt}. `;
+    txt += `${desc}. Temperatura actual: ${temp} grados, sensación térmica de ${feels} grados. Humedad: ${hum} por ciento. Viento: ${wind} kilómetros por hora. `;
+    txt += `Máxima de hoy: ${tmax} grados. Mínima: ${tmin} grados. Probabilidad de lluvia hoy: ${rainPct} por ciento. `;
+    if (rain) txt += `Se esperan lluvias aproximadamente a las ${rain.hour} horas con un ${rain.prob} por ciento de probabilidad. `;
+    else if (rainPct < 20) txt += `No se esperan lluvias hoy. `;
+    txt += aqiTxt;
+
     speakText(txt, 1.05);
   };
 
