@@ -318,28 +318,60 @@ function hurCol(k){k=parseInt(k)||0;if(k>=137)return"#ff0000";if(k>=113)return"#
 function hurCat(k){k=parseInt(k)||0;if(k>=137)return"CAT5";if(k>=113)return"CAT4";if(k>=96)return"CAT3";if(k>=64)return"CAT1-2";return"T.TROP";}
 function magCol(m){if(m>=7)return"#ff0000";if(m>=6)return"#ff4400";return"#ff8800";}
 
-// ── THERMOMETER WIDGET ────────────────────────────────────────────────────────
-function ToluciWeather({ac}) {
+// ── GEOLOCATION HOOK — municipio en tiempo real ───────────────────────────────
+function useGeoLocation() {
+  const [loc, setLoc] = useState({ lat: TOLUCA_LAT, lng: TOLUCA_LNG, municipio: "Cargando...", pais: "MX", tz: "America/Mexico_City" });
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    const onOk = async (pos) => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      let municipio = "Tu ubicación", pais = "MX", tz = "America/Mexico_City";
+      try {
+        // Reverse geocode → municipio
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=es`);
+        const d = await r.json();
+        const a = d.address || {};
+        // Intenta: municipality → city_district → city → town → village → county
+        municipio = a.municipality || a.city_district || a.city || a.town || a.village || a.county || a.state_district || "Tu municipio";
+        pais = a.country_code?.toUpperCase() || "MX";
+        // Timezone via Open-Meteo timezone (no key needed)
+        const tz_r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&timezone=auto&forecast_days=1&hourly=temperature_2m`);
+        const tz_d = await tz_r.json();
+        if (tz_d.timezone) tz = tz_d.timezone;
+      } catch (e) {}
+      setLoc({ lat, lng, municipio, pais, tz });
+    };
+    const onErr = () => {}; // keep defaults
+    navigator.geolocation.getCurrentPosition(onOk, onErr, { timeout: 8000 });
+    // Refresh every 5 min
+    const iv = setInterval(() => navigator.geolocation.getCurrentPosition(onOk, onErr, { timeout: 8000 }), 5 * 60 * 1000);
+    return () => clearInterval(iv);
+  }, []);
+  return loc;
+}
+
+// ── WEATHER WIDGET — solo icono+temp, clic para hablar ───────────────────────
+function WeatherWidget({ ac, loc }) {
   const [wx, setWx] = useState(null);
-  const [rain, setRain] = useState(null); // próxima hora de lluvia
+  const [rain, setRain] = useState(null);
 
   useEffect(() => {
+    if (!loc?.lat) return;
     const load = async () => {
       try {
         const r = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${TOLUCA_LAT}&longitude=${TOLUCA_LNG}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m&hourly=precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FMexico_City&forecast_days=2`
+          `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lng}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m&hourly=precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=${encodeURIComponent(loc.tz)}&forecast_days=2`
         );
         const d = await r.json();
         setWx(d);
-        // Busca la próxima hora con >40% de lluvia
+        setRain(null);
         const hr = d.hourly;
         if (hr) {
-          const now = new Date();
-          const nowH = now.getHours();
+          const nowH = new Date().getHours();
           for (let i = nowH; i < Math.min(hr.time.length, nowH + 18); i++) {
             if ((hr.precipitation_probability[i] || 0) >= 40) {
               const t = new Date(hr.time[i]);
-              setRain({ hour: t.getHours(), prob: hr.precipitation_probability[i], precip: hr.precipitation[i] });
+              setRain({ hour: t.getHours(), prob: hr.precipitation_probability[i] });
               break;
             }
           }
@@ -349,78 +381,109 @@ function ToluciWeather({ac}) {
     load();
     const iv = setInterval(load, 10 * 60 * 1000);
     return () => clearInterval(iv);
-  }, []);
+  }, [loc?.lat, loc?.lng]);
+
+  const handleClick = () => {
+    if (!wx?.current) return;
+    const c = wx.current;
+    const temp = Math.round(c.temperature_2m);
+    const feels = Math.round(c.apparent_temperature);
+    const desc = wmoText(c.weather_code);
+    const hum = c.relative_humidity_2m;
+    const wind = Math.round(c.wind_speed_10m);
+    const tmax = wx.daily ? Math.round(wx.daily.temperature_2m_max[0]) : "?";
+    const tmin = wx.daily ? Math.round(wx.daily.temperature_2m_min[0]) : "?";
+    const rainPct = wx.daily ? wx.daily.precipitation_probability_max[0] : 0;
+    let txt = `Clima actual en ${loc.municipio}. ${desc}. Temperatura: ${temp} grados, sensación térmica de ${feels} grados. Humedad: ${hum} por ciento. Viento: ${wind} kilómetros por hora. Máxima de hoy: ${tmax} grados. Mínima: ${tmin} grados. Probabilidad de lluvia hoy: ${rainPct} por ciento.`;
+    if (rain) txt += ` Se esperan lluvias aproximadamente a las ${rain.hour} horas con un ${rain.prob} por ciento de probabilidad.`;
+    else if (rainPct < 20) txt += " No se esperan lluvias hoy.";
+    speakText(txt, 1.05);
+  };
 
   if (!wx?.current) return (
-    <div style={{ padding: "5px 10px", border: `1px solid ${ac}22`, borderRadius: "4px", background: "#0a0a0a", fontSize: "7px", color: "#333", minWidth: "120px", textAlign: "center" }}>
-      📡 CARGANDO TOLUCA...
+    <div style={{ padding: "6px 10px", border: `1px solid ${ac}22`, borderRadius: "4px", background: "#0a0a0a", fontSize: "7px", color: "#333", cursor: "default" }}>
+      📡...
     </div>
   );
 
   const c = wx.current;
-  const daily = wx.daily;
   const temp = Math.round(c.temperature_2m);
   const feels = Math.round(c.apparent_temperature);
   const code = c.weather_code;
   const icon = wmoIcon(code);
-  const desc = wmoText(code);
-  const hum = c.relative_humidity_2m;
-  const wind = Math.round(c.wind_speed_10m);
-  const tmax = daily ? Math.round(daily.temperature_2m_max[0]) : "?";
-  const tmin = daily ? Math.round(daily.temperature_2m_min[0]) : "?";
-  const rainPct = daily ? daily.precipitation_probability_max[0] : 0;
-
-  // Thermometer fill: scale 0-30°C → 0-100%
   const fill = Math.max(5, Math.min(100, ((temp + 5) / 35) * 100));
   const tempColor = temp <= 5 ? "#00ccff" : temp <= 15 ? "#44aaff" : temp <= 25 ? "#ffaa00" : "#ff4400";
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "5px 10px", border: `1px solid ${ac}22`, borderRadius: "4px", background: "#0a0a0a", minWidth: "170px" }}>
-      {/* Thermometer SVG */}
-      <svg width="16" height="48" viewBox="0 0 16 48" style={{ flexShrink: 0 }}>
-        <rect x="6" y="4" width="4" height="30" rx="2" fill="#1a1a1a" stroke="#333" strokeWidth="0.5" />
-        <rect x="6.5" y={4 + 30 * (1 - fill / 100)} width="3" height={30 * fill / 100} rx="1.5" fill={tempColor} />
-        <circle cx="8" cy="38" r="6" fill={tempColor} />
-        <circle cx="8" cy="38" r="3.5" fill={tempColor} opacity="0.7" />
+    <div
+      onClick={handleClick}
+      title="Toca para escuchar el clima completo"
+      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "5px 10px", border: `1px solid ${ac}22`, borderRadius: "4px", background: "#0a0a0a", cursor: "pointer", transition: "border 0.15s" }}
+      onMouseEnter={e => e.currentTarget.style.border = `1px solid ${ac}66`}
+      onMouseLeave={e => e.currentTarget.style.border = `1px solid ${ac}22`}
+    >
+      {/* Termómetro mini */}
+      <svg width="12" height="38" viewBox="0 0 12 38">
+        <rect x="4" y="3" width="4" height="22" rx="2" fill="#1a1a1a" stroke="#2a2a2a" strokeWidth="0.5"/>
+        <rect x="4.5" y={3 + 22 * (1 - fill / 100)} width="3" height={22 * fill / 100} rx="1.5" fill={tempColor}/>
+        <circle cx="6" cy="30" r="5" fill={tempColor}/>
+        <circle cx="6" cy="30" r="2.8" fill={tempColor} opacity="0.6"/>
       </svg>
-      {/* Data */}
-      <div style={{ flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
-          <span style={{ fontSize: "11px" }}>{icon}</span>
-          <span style={{ fontSize: "18px", fontWeight: "900", color: tempColor, fontFamily: "'Courier New',monospace", lineHeight: 1 }}>{temp}°</span>
-          <span style={{ fontSize: "8px", color: "#444", fontFamily: "'Courier New',monospace" }}>ST {feels}°</span>
-        </div>
-        <div style={{ fontSize: "7px", color: "#555", letterSpacing: "0.5px", marginTop: "1px" }}>{desc} · {hum}% hum · {wind}km/h</div>
-        <div style={{ fontSize: "7px", color: "#444", marginTop: "1px" }}>↑{tmax}° ↓{tmin}° · {rainPct}% lluvia</div>
-        {rain && <div style={{ fontSize: "7px", color: "#4488ff", marginTop: "1px", animation: "blink 2s steps(1) infinite" }}>🌧 ~{rain.hour}:00h ({rain.prob}%)</div>}
-        {!rain && rainPct < 20 && <div style={{ fontSize: "7px", color: "#336633", marginTop: "1px" }}>☀️ Sin lluvia esperada hoy</div>}
-        <div style={{ fontSize: "5.5px", color: "#1a1a1a", letterSpacing: "1px", marginTop: "1px" }}>TOLUCA 2,667m • Open-Meteo</div>
+      {/* Icono + temp */}
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontSize: "16px", lineHeight: 1 }}>{icon}</div>
+        <div style={{ fontSize: "14px", fontWeight: "900", color: tempColor, fontFamily: "'Courier New',monospace", lineHeight: 1 }}>{temp}°</div>
+        <div style={{ fontSize: "6px", color: "#333", letterSpacing: "0.5px" }}>ST {feels}°</div>
+      </div>
+      {/* Lluvia si hay */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
+        {rain
+          ? <div style={{ fontSize: "7px", color: "#4488ff", animation: "blink 2s steps(1) infinite" }}>🌧 ~{rain.hour}h</div>
+          : <div style={{ fontSize: "7px", color: "#1a3a1a" }}>☀️ ok</div>
+        }
+        <div style={{ fontSize: "6px", color: "#1a1a1a", letterSpacing: "0.5px" }}>🔊 toca</div>
       </div>
     </div>
   );
 }
 
-// ── CLOCK ──────────────────────────────────────────────────────────────────────
-function Clock({ac}){
-  const[t,setT]=useState(new Date());
-  useEffect(()=>{const iv=setInterval(()=>setT(new Date()),1000);return()=>clearInterval(iv);},[]);
-  const hh=String(t.getHours()).padStart(2,"0"),mm=String(t.getMinutes()).padStart(2,"0"),ss=String(t.getSeconds()).padStart(2,"0");
-  const blink=t.getSeconds()%2===0;
-  const days=["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"];
-  const months=["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
-  return(
-    <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"5px 12px",border:`1px solid ${ac}22`,borderRadius:"4px",background:"#0a0a0a"}}>
-      <div style={{display:"flex",alignItems:"baseline",gap:"1px",fontFamily:"'Courier New',monospace"}}>
-        <span style={{fontSize:"28px",fontWeight:"900",color:ac,textShadow:`0 0 16px ${ac}`,lineHeight:1}}>{hh}</span>
-        <span style={{fontSize:"24px",fontWeight:"900",color:ac,opacity:blink?1:0.15,transition:"opacity 0.08s",lineHeight:1}}>:</span>
-        <span style={{fontSize:"28px",fontWeight:"900",color:ac,textShadow:`0 0 16px ${ac}`,lineHeight:1}}>{mm}</span>
-        <span style={{fontSize:"16px",fontWeight:"700",color:ac,opacity:blink?0.8:0.1,transition:"opacity 0.08s",lineHeight:1,marginLeft:"1px"}}>:</span>
-        <span style={{fontSize:"16px",fontWeight:"700",color:`${ac}aa`,lineHeight:1}}>{ss}</span>
+// ── CLOCK — solo hora, clic para hablar ───────────────────────────────────────
+function Clock({ ac, loc }) {
+  const [t, setT] = useState(new Date());
+  useEffect(() => { const iv = setInterval(() => setT(new Date()), 1000); return () => clearInterval(iv); }, []);
+
+  const hh = String(t.getHours()).padStart(2, "0");
+  const mm = String(t.getMinutes()).padStart(2, "0");
+  const ss = String(t.getSeconds()).padStart(2, "0");
+  const blink = t.getSeconds() % 2 === 0;
+
+  const days = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  const months = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+  const handleClick = () => {
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    const municipio = loc?.municipio || "tu ubicación";
+    const txt = `La hora actual en ${municipio} es: ${h} horas, ${m} minutos y ${s} segundos. Hoy es ${days[now.getDay()]} ${now.getDate()} de ${months[now.getMonth()]} de 2026.`;
+    speakText(txt, 1.05);
+  };
+
+  return (
+    <div
+      onClick={handleClick}
+      title="Toca para escuchar la hora"
+      style={{ display: "flex", alignItems: "center", gap: "2px", padding: "5px 12px", border: `1px solid ${ac}22`, borderRadius: "4px", background: "#0a0a0a", cursor: "pointer", transition: "border 0.15s" }}
+      onMouseEnter={e => e.currentTarget.style.border = `1px solid ${ac}66`}
+      onMouseLeave={e => e.currentTarget.style.border = `1px solid ${ac}22`}
+    >
+      <div style={{ display: "flex", alignItems: "baseline", gap: "1px", fontFamily: "'Courier New',monospace" }}>
+        <span style={{ fontSize: "28px", fontWeight: "900", color: ac, textShadow: `0 0 16px ${ac}`, lineHeight: 1 }}>{hh}</span>
+        <span style={{ fontSize: "24px", fontWeight: "900", color: ac, opacity: blink ? 1 : 0.15, transition: "opacity 0.08s", lineHeight: 1 }}>:</span>
+        <span style={{ fontSize: "28px", fontWeight: "900", color: ac, textShadow: `0 0 16px ${ac}`, lineHeight: 1 }}>{mm}</span>
+        <span style={{ fontSize: "14px", fontWeight: "700", color: ac, opacity: blink ? 0.8 : 0.1, transition: "opacity 0.08s", lineHeight: 1, marginLeft: "1px" }}>:</span>
+        <span style={{ fontSize: "14px", fontWeight: "700", color: `${ac}88`, lineHeight: 1 }}>{ss}</span>
       </div>
-      <div style={{display:"flex",flexDirection:"column",gap:"2px",borderLeft:`1px solid ${ac}15`,paddingLeft:"8px"}}>
-        <div style={{fontSize:"8px",color:"#444",letterSpacing:"2px",fontFamily:"'Courier New',monospace"}}>{days[t.getDay()]} {t.getDate()} {months[t.getMonth()]} 2026</div>
-        <div style={{fontSize:"6.5px",color:"#2a2a2a",letterSpacing:"2px",fontFamily:"'Courier New',monospace"}}>TOLUCA • MX</div>
-      </div>
+      <div style={{ fontSize: "6px", color: "#1a1a1a", letterSpacing: "1px", marginLeft: "4px", alignSelf: "flex-end", paddingBottom: "2px" }}>🔊</div>
     </div>
   );
 }
@@ -493,6 +556,7 @@ export default function App(){
   const[aiHeadline,setAiHeadline]=useState("");
   const[aiLoading,setAiLoading]=useState(false);
   const[showUpdateInfo,setShowUpdateInfo]=useState(false);
+  const loc=useGeoLocation();
   const lastHov=useRef(0);
   const lastHovId=useRef(null);
   const{playHover,playUI}=useAudio();
@@ -548,8 +612,8 @@ export default function App(){
           {aiHeadline&&<div style={{marginTop:"4px",fontSize:"8px",color:ac,maxWidth:"500px",lineHeight:"1.4"}}>🤖 {aiHeadline}</div>}
         </div>
         <div style={{display:"flex",gap:"8px",alignItems:"flex-start",flexWrap:"wrap"}}>
-          <Clock ac={ac}/>
-          <ToluciWeather ac={ac}/>
+          <Clock ac={ac} loc={loc}/>
+          <WeatherWidget ac={ac} loc={loc}/>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:"5px",alignItems:"flex-end"}}>
           <button onClick={cycleMode} style={{padding:"7px 13px",background:"transparent",border:`1px solid ${ac}`,borderRadius:"3px",color:ac,fontFamily:"'Courier New',monospace",fontSize:"10px",letterSpacing:"2px",cursor:"pointer",fontWeight:"bold",whiteSpace:"nowrap"}} onMouseEnter={e=>e.currentTarget.style.boxShadow=`0 0 22px ${ac}90`} onMouseLeave={e=>e.currentTarget.style.boxShadow="none"}>{NEXT[mode]} →</button>
