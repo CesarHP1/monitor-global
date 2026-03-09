@@ -407,28 +407,42 @@ function WeatherWidget({ ac, loc }) {
     const rainPct = wx.daily ? wx.daily.precipitation_probability_max[0] : 0;
     const mun = loc?.municipio || "tu ubicación";
 
-    // ── Detectar condición actual ──────────────────────────────────────────
+    // ── Detectar condición actual — weather_code es la fuente primaria ────
     const conditions = [];
-    // Lluvia activa
-    if (rain_mm > 0) conditions.push(`está lloviendo ahora mismo, con ${rain_mm.toFixed(1)} milímetros de lluvia registrados`);
-    else if (precip > 0 && code <= 77) conditions.push(`hay precipitación activa de ${precip.toFixed(1)} milímetros`);
-    // Nieve
-    if (snow > 0) conditions.push(`está nevando actualmente con ${snow.toFixed(1)} centímetros de nieve`);
-    // Tormenta eléctrica
-    if (code >= 95) conditions.push(`hay tormenta eléctrica activa con rayos y truenos`);
-    else if (code >= 80 && code <= 94) conditions.push(`hay chubascos y lluvias intermitentes`);
-    // Niebla
-    if (code >= 45 && code <= 48) conditions.push(`hay niebla o neblina, con visibilidad reducida`);
-    // Viento fuerte
-    if (wind > 50) conditions.push(`hay vientos muy fuertes de ${wind} kilómetros por hora`);
-    else if (wind > 30) conditions.push(`hay viento moderado a fuerte de ${wind} kilómetros por hora`);
-    if (gusts > 60) conditions.push(`ráfagas de hasta ${gusts} kilómetros por hora`);
-    // Calor/frío extremo
-    if (temp >= 35) conditions.push(`temperatura extremadamente alta de ${temp} grados, riesgo de golpe de calor`);
+
+    // 1. TORMENTA ELÉCTRICA (código 95-99) — máxima prioridad
+    if (code >= 95) {
+      const intensity = code >= 99 ? "con granizo intenso" : code >= 96 ? "con granizo leve" : "con relámpagos y truenos";
+      conditions.push(`hay tormenta eléctrica activa ${intensity}`);
+    }
+    // 2. CHUBASCOS / AGUACEROS (80-94)
+    else if (code >= 80 && code <= 84) conditions.push(`hay chubascos de lluvia intermitentes activos ahora mismo`);
+    else if (code >= 85 && code <= 86) conditions.push(`hay chubascos de nieve activos`);
+    // 3. LLUVIA (51-67)
+    else if (code >= 65 && code <= 67) conditions.push(`está lloviendo fuerte ahora mismo`);
+    else if (code >= 61 && code <= 64) conditions.push(`está lloviendo de forma moderada a leve en este momento`);
+    else if (code >= 51 && code <= 57) conditions.push(`hay llovizna o lluvia muy ligera activa`);
+    // 4. NIEVE (71-77)
+    else if (code >= 71 && code <= 77) conditions.push(`está nevando actualmente`);
+    // 5. NIEBLA (45-48)
+    else if (code >= 45 && code <= 48) conditions.push(`hay niebla o neblina con visibilidad reducida`);
+
+    // Siempre agrega precipitación medida si el sensor la detectó y el código no la capturó aún
+    if (rain_mm > 0.1 && code < 51) conditions.push(`se detectan ${rain_mm.toFixed(1)} milímetros de lluvia acumulada`);
+    if (snow > 0.1 && code < 71) conditions.push(`se detectan ${snow.toFixed(1)} centímetros de nieve`);
+
+    // Viento — independiente del código
+    if (wind > 50) conditions.push(`vientos muy fuertes de ${wind} km/h`);
+    else if (wind > 30) conditions.push(`viento moderado de ${wind} km/h`);
+    if (gusts > 60) conditions.push(`con ráfagas de hasta ${gusts} km/h`);
+
+    // Temperatura extrema
+    if (temp >= 35) conditions.push(`calor extremo de ${temp} grados, riesgo de golpe de calor`);
     else if (temp <= 0) conditions.push(`temperatura bajo cero, riesgo de heladas y superficies resbalosas`);
-    else if (temp <= 5) conditions.push(`temperatura muy baja, cerca de la congelación`);
-    // Sin evento
-    if (conditions.length === 0) conditions.push(`el clima está tranquilo y sin eventos severos activos`);
+    else if (temp <= 4) conditions.push(`temperatura muy baja de ${temp} grados, cerca de la congelación`);
+
+    // Solo si de verdad no hay nada
+    if (conditions.length === 0) conditions.push(`cielo ${desc.toLowerCase()} sin eventos severos activos`);
 
     // ── Calidad del aire ──────────────────────────────────────────────────
     let aqiTxt = "";
