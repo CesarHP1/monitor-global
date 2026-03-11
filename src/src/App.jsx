@@ -60,15 +60,15 @@ const MODES = ["war","disease","climate","news"];
 const ACC  = { war:"#ff2020", disease:"#ff6600", climate:"#00aaff", news:"#ffcc00" };
 const BG   = { war:"#020508", disease:"#020a05", climate:"#020810", news:"#050400" };
 const GRID = { war:"#ff202008", disease:"#ff660008", climate:"#00aaff08", news:"#ffcc0008" };
-const TITLES = { war:"⚔️  CONFLICTOS GLOBALES — DÍA 11 — 10 MAR 2026", disease:"🦠  BROTES GLOBALES — OMS — 10 MAR 2026", climate:"🌍  CLIMA · SISMOS USGS · NOAA · NASA EONET", news:"📰  ECONOMÍA & MERCADOS — 10 MAR 2026" };
+const TITLES = { war:"⚔️  CONFLICTOS GLOBALES — DÍA 12 — 11 MAR 2026", disease:"🦠  BROTES GLOBALES — OMS — 11 MAR 2026", climate:"🌍  CLIMA · SISMOS USGS · NOAA · NASA EONET", news:"📰  ECONOMÍA & MERCADOS — 11 MAR 2026" };
 const NEXT   = { war:"🦠 ENFERMEDADES", disease:"🌍 CLIMA", climate:"📰 ECONOMÍA", news:"⚔️ CONFLICTOS" };
 const STATUS_L = { guerra:"EN GUERRA", atacado:"BAJO ATAQUE", activo:"EN CURSO", tension:"EN TENSIÓN", critico:"CRÍTICO", alerta:"EN ALERTA", extremo:"EXTREMO" };
 
 const MODE_VOICE = {
-  war:"Conflictos globales. Día once de la guerra Irán, Estados Unidos e Israel. Se destruyeron cinco mil objetivos iraníes. Trump envió señales mixtas entre guerra completa y victoria total. Brent tocó ciento diecinueve dólares. Bahrain declaró fuerza mayor en toda su operación petrolera.",
+  war:"Conflictos globales. Día doce de la guerra Irán, Estados Unidos e Israel. Israel atacó por primera vez instalaciones nucleares en Fordow. Trump habló con Xi Jinping sobre posible mediación china. Brent sube de nuevo a noventa y cinco dólares. Cumbre extraordinaria de la OTAN mañana en Bruselas.",
   disease:"Modo enfermedades. Nueve mil setenta y cuatro casos de sarampión en México. Siete estados en focos rojos incluyendo sedes del Mundial veinte veintiséis. Mpox clade uno ya en Estados Unidos sin historial de viaje. Nipah activo en India con mortalidad del setenta por ciento.",
   climate:"Modo clima y desastres naturales. Frente Frío treinta y nueve activo en México hoy martes. Veintitrés tornados en veinticuatro horas en Estados Unidos. Ola de calor histórica en India con cincuenta y un grados. Sismos USGS y huracanes NOAA en tiempo real.",
-  news:"Modo economía. El Brent tocó ciento diecinueve dólares el lunes. Hoy regresa a noventa. Bahrain y Qatar declararon fuerza mayor. Ormuz al noventa y cinco por ciento menos tráfico. Empleos de Estados Unidos cayeron noventa y dos mil en febrero. Desempleo sube a cuatro punto cuatro por ciento.",
+  news:"Modo economía. Brent sube de nuevo a noventa y cinco dólares tras el ataque israelí a Fordow. Nasdaq cayó tres por ciento. Cumbre OTAN mañana en Bruselas. Los aranceles del veinticinco por ciento de Trump a Europa entran en vigor el quince de marzo. Fed pausó tasas de emergencia.",
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -177,19 +177,20 @@ const ALL_COUNTRY_DATA = {
 // STATIC DATA POINTS
 // ═══════════════════════════════════════════════════════════════════
 const BASE_WAR = [
-  {id:"usa",name:"EE.UU.",lat:38,lng:-97,c:"#ff2020",s:5,st:"guerra",conn:["iran"],fecha:"DÍA 11",det:"5,000+ objetivos destruidos. 8 soldados muertos. Trump: señales mixtas entre 'guerra completa' y 'victoria total'. Operación para incautar uranio iraní en discusión con Israel."},
-  {id:"iran",name:"IRÁN",lat:32.4,lng:53.7,c:"#ff1a1a",s:5,st:"guerra",conn:["israel","gulf"],fecha:"DÍA 11",det:"IRGC decide cuándo termina. Internet apagado 240+ horas récord mundial. 1,255+ muertos, 10,000 heridos. 500+ misiles y 2,000+ drones lanzados desde el día 1."},
-  {id:"israel",name:"ISRAEL",lat:31,lng:34.9,c:"#ff1a1a",s:5,st:"guerra",conn:["lebanon"],fecha:"DÍA 11",det:"Ataca infraestructura Hezbollah en Beirut. Fósforo blanco en sur del Líbano (HRW). 82% de israelíes apoya las operaciones."},
-  {id:"lebanon",name:"LÍBANO",lat:33.9,lng:35.5,c:"#ff4444",s:4,st:"guerra",fecha:"DÍA 11",det:"486+ muertos: 83 niños, 42 mujeres. Beirut sur bombardeado. Fósforo blanco confirmado por HRW."},
+  {id:"usa",name:"EE.UU.",lat:38,lng:-97,c:"#ff2020",s:5,st:"guerra",conn:["iran"],fecha:"DÍA 12",det:"DÍA 12 — 9 soldados muertos. 5,800+ objetivos destruidos. Trump habló con Xi: mediación china rechazada. Hegseth confirmó que el strike en escuela de niñas fue error de targeting. Planificación avanzada para operación de incautación de uranio iraní."},
+  {id:"iran",name:"IRÁN",lat:32.4,lng:53.7,c:"#ff1a1a",s:5,st:"guerra",conn:["israel","gulf"],fecha:"DÍA 12",det:"DÍA 12 — Fordow atacada por primera vez. IAEA confirma daños en centrifugadoras. 1,480+ muertos, 12,000+ heridos. IRGC anuncia respuesta sin precedentes. Internet apagado 264+ horas. Mojtaba Jamenei en reunión de emergencia del Consejo Supremo de Seguridad."},
+  {id:"israel",name:"ISRAEL",lat:31,lng:34.9,c:"#ff1a1a",s:5,st:"guerra",conn:["lebanon"],fecha:"DÍA 12",det:"DÍA 12 — Atacó Fordow con GBU-57 bunker busters: primera vez en la historia. IAEA confirma daños. Netanyahu: no permitiremos bomba iraní. Nuevo ataque en depósito de armas Hezbollah en Baalbek, Líbano."},
+  {id:"fordow",name:"FORDOW ☢️\n¡ATACADA!",lat:34.6,lng:51.1,c:"#ff0000",s:5,st:"critico",fecha:"DÍA 12",det:"FORDOW ATACADA DÍA 12 — Primera vez en la historia que esta instalación nuclear a 80m de profundidad es golpeada. Israel usó GBU-57: la bomba perforante más potente del mundo. IAEA confirma daños en sala de centrifugadoras. Enriquecimiento al 60% interrumpido. IRGC: 'respuesta sin precedentes'. Brent subió $5 en minutos."},
+  {id:"lebanon",name:"LÍBANO",lat:33.9,lng:35.5,c:"#ff4444",s:4,st:"guerra",fecha:"DÍA 12",det:"500+ muertos: 89 niños, 48 mujeres. Nuevo ataque israelí a depósito de armas Hezbollah en Baalbek. Fósforo blanco confirmado por HRW."},
   {id:"ukraine",name:"UCRANIA",lat:48.4,lng:31.2,c:"#ff8800",s:4,st:"guerra",conn:["russia"],fecha:"EN CURSO",det:"Guerra con Rusia año 5. Ayuda a EE.UU. con análisis de drones Shahed iraníes. Zelenski: ya es la Tercera Guerra Mundial."},
-  {id:"russia",name:"RUSIA\n⚠️INTEL",lat:61.5,lng:105,c:"#ff4400",s:4,st:"activo",fecha:"10 MAR",det:"Da a Irán coordenadas de buques y aviones de EE.UU. Confirmado por 3 fuentes. Putin habló con Trump sobre Irán y Ucrania."},
-  {id:"pak",name:"PAKISTÁN",lat:30.4,lng:69.3,c:"#ff5500",s:4,st:"guerra",conn:["afg"],fecha:"DÍA 8",det:"Operación en curso. 481+ afganos muertos. Bagram destruida. Potencia nuclear en guerra activa."},
-  {id:"afg",name:"AFGANISTÁN",lat:33.9,lng:67.7,c:"#ff5500",s:4,st:"guerra",fecha:"DÍA 8",det:"Bajo bombardeo pakistaní. 21.9M necesitan ayuda humanitaria. Taliban abierto a diálogo."},
-  {id:"gulf",name:"GOLFO\n🔴CRISIS",lat:24.5,lng:51.2,c:"#ff6600",s:5,st:"atacado",fecha:"10 MAR",det:"Bahrain BAPCO force majeure. Saudi Aramco cierra Ras Tanura. Qatar LNG fuerza mayor (20% gas mundial). Ormuz: -95% tráfico. 300+ petroleros atrapados."},
-  {id:"ormuz",name:"ORMUZ\n-95% TRÁFICO",lat:26.6,lng:56.5,c:"#ff8800",s:5,st:"critico",fecha:"10 MAR",det:"Tráfico de petroleros cayó 95%. 300+ barcos atrapados. Citigroup: pérdida 7-11 millones barriles/día. Brent tocó $119."},
-  {id:"school",name:"ESCUELA\n168 NIÑAS",lat:27.5,lng:55,c:"#ff2200",s:5,st:"critico",fecha:"10 MAR",det:"Strike de EE.UU. el día 1 mató 168 niñas en escuela primaria. Bellingcat y NPR verificaron. Pentágono investiga. Trump culpa a Irán."},
-  {id:"turkey",name:"TURQUÍA\n🛡️OTAN",lat:39,lng:35,c:"#ffcc00",s:3,st:"tension",fecha:"10 MAR",det:"Turquía derribó misil balístico iraní con defensa OTAN. Primer incidente colectivo de la guerra. Erdogan convocó el Artículo 4."},
-  {id:"soccer",name:"FÚTBOL IRANÍ\n🇦🇺 ASILO",lat:-33.8,lng:151,c:"#ff9900",s:2,st:"activo",fecha:"10 MAR",det:"5 jugadoras del equipo femenil iraní pidieron asilo en Australia durante la Copa Asiática. Australia confirmó protección policial."},
+  {id:"russia",name:"RUSIA\n⚠️INTEL",lat:61.5,lng:105,c:"#ff4400",s:4,st:"activo",fecha:"11 MAR",det:"Sigue dando a Irán coordenadas de buques y aviones USA. Confirmado por inteligencia occidental. Putin: condena el ataque a Fordow. Convocó al embajador israelí."},
+  {id:"pak",name:"PAKISTÁN",lat:30.4,lng:69.3,c:"#ff5500",s:4,st:"guerra",conn:["afg"],fecha:"DÍA 8+",det:"Operación en curso. 481+ afganos muertos. Bagram destruida. Potencia nuclear en guerra activa."},
+  {id:"afg",name:"AFGANISTÁN",lat:33.9,lng:67.7,c:"#ff5500",s:4,st:"guerra",fecha:"DÍA 8+",det:"Bajo bombardeo pakistaní. 21.9M necesitan ayuda humanitaria. Taliban abierto a diálogo."},
+  {id:"gulf",name:"GOLFO\n🔴CRISIS",lat:24.5,lng:51.2,c:"#ff6600",s:5,st:"atacado",fecha:"11 MAR",det:"Bahrain BAPCO force majeure. Saudi Aramco cierra Ras Tanura. Qatar LNG fuerza mayor (20% gas mundial). Ormuz: -95% tráfico. 300+ petroleros atrapados."},
+  {id:"ormuz",name:"ORMUZ\n-95% TRÁFICO",lat:26.6,lng:56.5,c:"#ff8800",s:5,st:"critico",fecha:"11 MAR",det:"Tráfico de petroleros cayó 95%. 300+ barcos atrapados. Citigroup: pérdida 7-11 millones barriles/día. Fordow atacada: Brent sube de nuevo a $95."},
+  {id:"school",name:"ESCUELA\n168 NIÑAS",lat:27.5,lng:55,c:"#ff2200",s:5,st:"critico",fecha:"11 MAR",det:"Strike del día 1 mató 168 niñas en escuela primaria en sureste de Irán. DÍA 12: Hegseth confirmó que fue un error de targeting. Pentágono abre investigación formal. Trump culpa a Irán por usar escuelas como escudo."},
+  {id:"turkey",name:"TURQUÍA\n🛡️OTAN",lat:39,lng:35,c:"#ffcc00",s:3,st:"tension",fecha:"11 MAR",det:"Turquía derribó misil balístico iraní. Artículo 4 activo. Erdogan vuela a Bruselas para la cumbre OTAN del 12 de marzo. Mediador activo entre partes."},
+  {id:"china",name:"CHINA\n❌MEDIACIÓN",lat:35,lng:104,c:"#ffcc00",s:3,st:"tension",fecha:"11 MAR",det:"China propuso cese al fuego de 72 horas. Condición: EE.UU. retira USS Ford del Golfo. Trump rechazó. Xi: seguiremos comprando petróleo iraní. Segunda ronda de negociación en discusión."},
 ];
 
 const CARRIERS = [
@@ -233,15 +234,14 @@ const BASE_CLIMATE = [
 ];
 
 const BASE_NEWS = [
-  {id:"oil",name:"BRENT ~$90\n⬆️VOLÁTIL",lat:26.6,lng:56.5,c:"#ffaa00",s:5,st:"critico",icon:"🛢️",fecha:"10 MAR",det:"Brent tocó $119 el lunes, regresa a ~$90. Ormuz -95% tráfico. Qatar LNG fuerza mayor. Saudi Aramco cierra Ras Tanura. Citigroup: pérdida 7-11M barriles/día."},
-  {id:"trump",name:"TRUMP\nSEÑALES MIXTAS",lat:38,lng:-97,c:"#ff6600",s:5,st:"critico",icon:"🗣️",fecha:"10 MAR",det:"A CBS: 'guerra muy completa'. En Miami: 'necesitamos victoria total'. Amenaza a Irán: '20 veces más fuerte' si toca Ormuz. Mercados suben y bajan con cada declaración."},
-  {id:"jobs",name:"EMPLEOS\n-92K FEB",lat:38,lng:-93,c:"#ff3344",s:4,st:"activo",icon:"📊",fecha:"7 MAR",det:"EE.UU. perdió 92K empleos en febrero. Peor desde COVID. Desempleo 4.4%. Bono 10 años: 4.13%. Fed mantiene tasas altas más tiempo."},
-  {id:"bapco",name:"BAHRAIN\n🔴FORCE MAJ.",lat:26.2,lng:50.5,c:"#ff4444",s:4,st:"critico",icon:"🔥",fecha:"10 MAR",det:"BAPCO declaró force majeure. Primer gran productor del Golfo en colapso operativo por la guerra. 32 heridos en zona residencial."},
-  {id:"stocks",name:"BOLSAS\nREBOTE",lat:40.7,lng:-74,c:"#44cc88",s:3,st:"activo",icon:"📈",fecha:"10 MAR",det:"Rebote global mientras el petróleo baja de $119 a $90. Frágil: empleos caídos, guerra activa, Ormuz cerrado."},
-  {id:"peso",name:"PESO MX\n>18/USD",lat:19.4,lng:-99.1,c:"#ffaa44",s:4,st:"activo",icon:"💱",fecha:"10 MAR",det:"Peso rompió barrera de 18/USD. Gasolina +22%. FMI: recesión México Q3 si la guerra dura 4+ semanas."},
-  {id:"nato_s",name:"OTAN\n12 MAR BRUSELAS",lat:50.9,lng:4.4,c:"#4466ff",s:3,st:"activo",icon:"🛡️",fecha:"12 MAR",det:"Cumbre extraordinaria el 12 de marzo. Solo 8/32 cumplen 2% del PIB. Trump exige 5%. Turquía derribó misil iraní."},
-  {id:"saudi_r",name:"RAS TANURA\n🔴CERRADA",lat:26.6,lng:50,c:"#ff2200",s:5,st:"critico",icon:"🛢️",fecha:"10 MAR",det:"Saudi Aramco cerró Ras Tanura, la mayor refinería del mundo. Primera vez en décadas. Capacidad: 550K barriles/día. Impacto global inmediato."},
-  {id:"soccer_au",name:"FÚTBOL IRANÍ\nASILO AU",lat:-33.8,lng:151,c:"#ff9900",s:2,st:"activo",icon:"⚽",fecha:"10 MAR",det:"5 jugadoras del equipo femenil iraní pidieron asilo en Australia. Copa Asiática Femenina. Australia confirmó protección policial."},
+  {id:"fordow_n",name:"FORDOW ☢️\n¡ATACADA!",lat:34.6,lng:51.1,c:"#ff0000",s:5,st:"critico",icon:"☢️",fecha:"11 MAR",det:"DÍA 12 — Israel atacó Fordow con GBU-57. IAEA confirma daños. Brent subió $5 en minutos al conocerse la noticia. Primera vez que esta instalación nuclear es atacada. IRGC anuncia respuesta sin precedentes."},
+  {id:"oil",name:"BRENT ~$95\n⬆️FORDOW",lat:26.6,lng:56.5,c:"#ffaa00",s:5,st:"critico",icon:"🛢️",fecha:"11 MAR",det:"Brent sube a $95 tras ataque israelí a Fordow. El lunes tocó $119. Ormuz -95% tráfico. Qatar LNG fuerza mayor. Saudi Aramco cierra Ras Tanura. Volatilidad máxima."},
+  {id:"trump_xi",name:"TRUMP-XI\n❌MEDIACIÓN",lat:38,lng:-97,c:"#ff6600",s:5,st:"critico",icon:"🗣️",fecha:"11 MAR",det:"Trump habló con Xi Jinping. China propuso cese al fuego de 72 horas a cambio de que EE.UU. retire USS Ford del Golfo. Trump rechazó. Xi: China continuará comprando petróleo iraní. Segunda llamada posible."},
+  {id:"nato_s",name:"OTAN\nMAÑANA 12 MAR",lat:50.9,lng:4.4,c:"#4466ff",s:4,st:"activo",icon:"🛡️",fecha:"12 MAR",det:"Cumbre OTAN extraordinaria mañana en Bruselas. Artículo 4 ya activo. Se discutirá si Artículo 5 aplica (ataque a un miembro = ataque a todos). Fordow cambia el escenario: primera vez que OTAN enfrenta posibilidad de represalia nuclear iraní."},
+  {id:"jobs",name:"NASDAQ\n-3% HOY",lat:40.7,lng:-74,c:"#ff3344",s:4,st:"activo",icon:"📉",fecha:"11 MAR",det:"Nasdaq -3% tras ataque a Fordow y subida del Brent a $95. Wall Street abre con ventas masivas. Empleos de febrero -92K. Fed: ¿pausa de emergencia en tasas?."},
+  {id:"peso",name:"PESO MX\n>18.5/USD",lat:19.4,lng:-99.1,c:"#ffaa44",s:4,st:"activo",icon:"💱",fecha:"11 MAR",det:"Peso rebasa 18.5/USD tras Fordow. Gasolina +22%. Aranceles 35% Trump. FMI: recesión México Q3."},
+  {id:"bapco",name:"BAHRAIN+QATAR\n🔴FORCE MAJ.",lat:26.2,lng:50.5,c:"#ff4444",s:4,st:"critico",icon:"🔥",fecha:"10 MAR",det:"BAPCO y Qatar LNG mantienen force majeure. 20% del gas mundial interrumpido. Ras Tanura cerrada. Ormuz -95%."},
+  {id:"tariffs",name:"ARANCELES\n15 MAR 🚨",lat:47,lng:9,c:"#ff8800",s:4,st:"activo",icon:"📦",fecha:"15 MAR",det:"En 4 días entran en vigor los aranceles del 25% de Trump a todos los productos europeos. Europa prepara represalias por 45 mil millones. España, Francia, Alemania e Italia en alerta."},
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -252,13 +252,14 @@ const BASE_NEWS = [
 function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
   const [tab, setTab] = useState("timeline");
   const timeline = [
-    { day:"DÍA 1",date:"28 FEB",col:"#ff2020",ev:"Jamenei muerto. 200+ jets israelíes. 201 iraníes muertos. 3 soldados USA."},
+    { day:"DÍA 1",date:"28 FEB",col:"#ff2020",ev:"Jamenei muerto. 200+ jets israelíes. 201 iraníes muertos. 3 soldados USA. Strike en escuela: 168 niñas."},
     { day:"DÍA 2-3",date:"1-2 MAR",col:"#ff3300",ev:"IRIS Dena hundido. Turquía intercepta misil iraní. Chipre (OTAN) atacada."},
     { day:"DÍA 4-5",date:"3-4 MAR",col:"#ff4400",ev:"Mojtaba Jamenei nuevo Líder Supremo. Rusia comienza apoyo intel a Irán."},
     { day:"DÍA 6-7",date:"5-6 MAR",col:"#ff5500",ev:"France CDG en Mediterráneo. Maersk suspende Medio Oriente. Brent +27%."},
     { day:"DÍA 8",date:"8 MAR",col:"#ff6600",ev:"Israel ataca refinerías. Shahran en llamas. Todo el Golfo bajo ataques. Qatar LNG fuerza mayor."},
     { day:"DÍA 9-10",date:"9-10 MAR",col:"#ff8800",ev:"Ras Tanura cerrada. Brent toca $119. Bahrain BAPCO force majeure. 8 soldados USA muertos."},
-    { day:"DÍA 11",date:"HOY",col:"#ff2020",ev:"DÍA MÁS INTENSO: Trump señales mixtas. 5,000+ objetivos. Ormuz -95%."},
+    { day:"DÍA 11",date:"10 MAR",col:"#ff9900",ev:"Trump señales mixtas. 5,000+ objetivos. Hegseth confirma: escuela fue error targeting."},
+    { day:"DÍA 12",date:"HOY",col:"#ff2020",ev:"🔴 FORDOW ATACADA — PRIMERA VEZ. GBU-57. IAEA confirma daños. Trump-Xi: mediación rechazada. Brent sube $5."},
   ];
   return (
     <div style={{background:"rgba(2,5,8,0.95)",border:"1px solid #ff202033",borderRadius:"8px",padding:"12px",backdropFilter:"blur(10px)"}}>
@@ -287,7 +288,7 @@ function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
         );})}
       </div>}
       {tab==="counter"&&<div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"6px"}}>
-        {[{l:"MUERTOS IRÁN",v:"1,255+",c:"#ff1a1a",sub:"civiles: 400+"},{l:"SOLDADOS USA",v:"8 ✝",c:"#ff4444",sub:"Sgt. Pennington último"},{l:"MISILES IRÁN",v:"500+",c:"#ff6600",sub:"lanzados en 11 días"},{l:"DRONES IRÁN",v:"2,000+",c:"#ff8800",sub:"shahed + otra clase"},{l:"OBJETIVOS\nDESTRUIDOS",v:"5,000+",c:"#ffaa00",sub:"incluye refinería #1"},{l:"NIÑOS MUERTOS",v:"168+",c:"#ff2200",sub:"escuela día 1 + líbano"},{l:"ORMUZ\nTRÁFICO",v:"-95%",c:"#ff8800",sub:"300 barcos atrapados"},{l:"COSTO/DÍA",v:"$891M",c:"#ffcc00",sub:"no presupuestado"}].map(s=>(
+        {[{l:"MUERTOS IRÁN",v:"1,480+",c:"#ff1a1a",sub:"civiles: 500+"},{l:"SOLDADOS USA",v:"9 ✝",c:"#ff4444",sub:"+ 1 nuevo hoy"},{l:"MISILES IRÁN",v:"550+",c:"#ff6600",sub:"12 días"},{l:"DRONES IRÁN",v:"2,200+",c:"#ff8800",sub:"shahed + tipo A"},{l:"OBJETIVOS\nDESTRUIDOS",v:"5,800+",c:"#ffaa00",sub:"incluye Fordow"},{l:"FORDOW ☢️",v:"ATACADA",c:"#ff0000",sub:"1ª vez en historia"},{l:"ORMUZ\nTRÁFICO",v:"-95%",c:"#ff8800",sub:"300 barcos bloq."},{l:"COSTO/DÍA",v:"$891M",c:"#ffcc00",sub:"no presupuestado"}].map(s=>(
           <div key={s.l} style={{background:"rgba(0,0,0,0.6)",border:`1px solid ${s.c}22`,borderRadius:"5px",padding:"8px 7px",textAlign:"center"}}>
             <div style={{fontSize:"16px",fontWeight:"900",color:s.c,textShadow:`0 0 8px ${s.c}66`,fontFamily:"'Courier New',monospace"}}>{s.v}</div>
             <div style={{fontSize:"6px",color:"rgba(255,255,255,0.25)",letterSpacing:"1px",marginTop:"2px",lineHeight:1.3}}>{s.l}</div>
@@ -767,10 +768,10 @@ export default function App(){
 
   const DATA_MAP={war:BASE_WAR,disease:BASE_DISEASE,climate:clmPts,news:BASE_NEWS};
   const STATS={
-    war:[{l:"MUERTOS IRÁN",v:"1,255+",c:"#ff1a1a"},{l:"SOLDADOS USA",v:"8 ✝",c:"#ff4444"},{l:"OBJETIVOS",v:"5,000+",c:"#ff6600"},{l:"BRENT",v:"~$90 ↕",c:"#ffaa00"},{l:"ORMUZ",v:"-95%",c:"#ff8800"},{l:"DÍA GUERRA",v:"11",c:"#ffcc00"},{l:"PORTAAVIONES",v:"5 🚢",c:"#4488ff"},{l:"USD/MXN",v:fx?`$${fx}`:"...",c:"#88cc00"}],
+    war:[{l:"MUERTOS IRÁN",v:"1,480+",c:"#ff1a1a"},{l:"SOLDADOS USA",v:"9 ✝",c:"#ff4444"},{l:"OBJETIVOS",v:"5,800+",c:"#ff6600"},{l:"BRENT",v:"~$95 ↑",c:"#ffaa00"},{l:"ORMUZ",v:"-95%",c:"#ff8800"},{l:"DÍA GUERRA",v:"12",c:"#ffcc00"},{l:"PORTAAVIONES",v:"5 🚢",c:"#4488ff"},{l:"USD/MXN",v:fx?`$${fx}`:"...",c:"#88cc00"}],
     disease:[{l:"SARAMPIÓN MX",v:"9,074",c:"#ff2200"},{l:"ESTADOS MX",v:"7 FOCOS",c:"#ff4400"},{l:"MPOX",v:"100K+",c:"#ff6600"},{l:"H5N1",v:"⚠️PANDEMIA",c:"#ffaa00"},{l:"NIPAH",v:"5 CASOS",c:"#cc0000"},{l:"DENGUE",v:"5M casos",c:"#ff8800"},{l:"ÉBOLA",v:"65% MORT",c:"#cc0000"},{l:"NIVEL OMS",v:"EMERGENCIA",c:"#ff2020"}],
     climate:[{l:"HURACANES",v:"NOAA LIVE",c:"#8844ff"},{l:"SISMOS M5.5+",v:`${quakes.length} USGS`,c:"#ffaa00"},{l:"NASA EONET",v:`${eonet.length} ACTIVOS`,c:"#ff7700"},{l:"INDIA MAX",v:wlive.india?`${wlive.india.temperature_2m}°C`:"51°C",c:"#ff2200"},{l:"TORNADOS",v:"USA EF4",c:"#aa44ff"},{l:"AVIONES",v:planes.length>0?`${planes.length} LIVE`:"OPENSKY",c:"#00cc88"},{l:"FRÍO MX",v:"FF39 HOY",c:"#00aaff"},{l:"CO₂",v:"428 ppm",c:"#ffaa00"}],
-    news:[{l:"BRENT",v:"~$90 ↕",c:"#ffaa00"},{l:"BTC",v:crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"...",c:"#ffdd00"},{l:"USD/MXN",v:fx?`$${fx}`:"...",c:"#88cc00"},{l:"BOLSAS",v:"↑REBOTE",c:"#44ff88"},{l:"EMPLEOS",v:"-92K FEB",c:"#ff3344"},{l:"QATAR LNG",v:"🔴FM",c:"#ff4444"},{l:"ORMUZ",v:"-95%",c:"#ff6600"},{l:"FMI",v:"RECESIÓN",c:"#ffee00"}],
+    news:[{l:"BRENT",v:"~$95 ↑",c:"#ffaa00"},{l:"BTC",v:crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"...",c:"#ffdd00"},{l:"USD/MXN",v:fx?`$${fx}`:"...",c:"#88cc00"},{l:"NASDAQ",v:"-3%",c:"#ff3344"},{l:"EMPLEOS",v:"-92K FEB",c:"#ff3344"},{l:"QATAR LNG",v:"🔴FM",c:"#ff4444"},{l:"ORMUZ",v:"-95%",c:"#ff6600"},{l:"OTAN",v:"12 MAR🛡️",c:"#4466ff"}],
   };
 
   // Connection lines
@@ -812,16 +813,16 @@ export default function App(){
       {/* TICKER */}
       <div style={{width:"100%",maxWidth:"980px",marginBottom:"6px",overflow:"hidden",background:"rgba(0,0,0,0.6)",border:`1px solid ${ac}15`,borderRadius:"4px",padding:"4px 0",backdropFilter:"blur(4px)",position:"relative",zIndex:1}}>
         <div style={{fontSize:"7.5px",color:ac,letterSpacing:"1px",whiteSpace:"nowrap",animation:"ticker 55s linear infinite",display:"inline-block",paddingLeft:"100%"}}>
-          {fx&&`💱 USD/MXN LIVE: $${fx}  •  `}{crypto?.bitcoin&&`₿ BTC: $${Math.round(crypto.bitcoin.usd/1000)}K (${crypto.bitcoin.usd_24h_change>0?"+":""}${crypto.bitcoin.usd_24h_change?.toFixed(1)}%)  •  `}⚔️ DÍA 11 GUERRA — BRENT ~$90 ↕ VOLÁTIL  •  🔴 BAHRAIN BAPCO + QATAR LNG FORCE MAJEURE  •  🛢️ SAUDI ARAMCO CIERRA RAS TANURA  •  🦠 SARAMPIÓN MX: 9,074 CASOS — 7 ESTADOS  •  💼 EMPLEOS USA -92K FEB — DESEMPLEO 4.4%  •  🛡️ OTAN CUMBRE 12 MAR BRUSELAS  •  ⚽ 5 FUTBOLISTAS IRANÍES ASILO EN AUSTRALIA  •  🇹🇷 TURQUÍA DERRIBÓ MISIL IRANÍ CON OTAN  •  {quakes.length>0?`🌋 ${quakes.length} SISMOS M5.5+ ACTIVOS  •  `:""}✈️ {planes.length>0?`${planes.length} AVIONES EN MEDIO ORIENTE  •  `:"OPENSKY ACTIVO  •  "}{fx&&`💱 USD/MXN LIVE: $${fx}  •  `}
+          {fx&&`💱 USD/MXN LIVE: $${fx}  •  `}{crypto?.bitcoin&&`₿ BTC: $${Math.round(crypto.bitcoin.usd/1000)}K (${crypto.bitcoin.usd_24h_change>0?"+":""}${crypto.bitcoin.usd_24h_change?.toFixed(1)}%)  •  `}🔴 ISRAEL ATACÓ FORDOW — INSTALACIÓN NUCLEAR IRANÍ — DÍA 12  •  💥 BRENT SUBE ~$95 — NUEVO IMPULSO ALCISTA  •  🛡️ OTAN CUMBRE MAÑANA 12 MAR BRUSELAS — 32 PAÍSES  •  🗣️ TRUMP-XI HABLARON — MEDIACIÓN CHINA RECHAZADA  •  🦠 SARAMPIÓN MX: 9,074 CASOS — 7 ESTADOS  •  💼 EMPLEOS USA -92K FEB — NASDAQ -3%  •  ⚔️ 9 SOLDADOS USA MUERTOS — 1,480+ IRANÍES  •  🔴 BAHRAIN + QATAR FORCE MAJEURE — ORMUZ -95%  •  {quakes.length>0?`🌋 ${quakes.length} SISMOS M5.5+ ACTIVOS  •  `:""}✈️ {planes.length>0?`${planes.length} AVIONES EN MEDIO ORIENTE  •  `:"OPENSKY ACTIVO  •  "}{fx&&`💱 USD/MXN LIVE: $${fx}  •  `}
         </div>
       </div>
 
       {/* TOP ALERT BANNERS */}
       {mode==="war"&&<div style={{width:"100%",maxWidth:"980px",marginBottom:"6px",display:"flex",gap:"4px",flexWrap:"wrap",position:"relative",zIndex:1}}>
-        {[{txt:"🗣️ TRUMP: 'GUERRA COMPLETA' Y 'VICTORIA TOTAL' EL MISMO DÍA — SEÑALES MIXTAS",c:"#ff6600",det:"Trump a CBS: 'la guerra está muy completa'. Horas después en Miami: 'necesitamos victoria total'. Los mercados suben y bajan con cada declaración. Amenazó a Irán: 20 veces más fuerte si toca Ormuz."},
-          {txt:"🛢️ BRENT TOCÓ $119 EL LUNES — HOY REGRESA A ~$90 — MÁXIMA VOLATILIDAD",c:"#ffaa00",det:"Brent tocó $119 el lunes. Hoy regresa a ~$90. Ormuz -95% tráfico. Qatar LNG fuerza mayor. Saudi Aramco cerró Ras Tanura. Primera vez múltiples productores declaran force majeure simultáneamente desde la Guerra del Golfo."},
-          {txt:"🔴 BAHRAIN BAPCO + QATAR LNG FORCE MAJEURE — ORMUZ -95% — 10 MAR",c:"#ff4444",det:"BAPCO (Bahrain) y Qatar Energy declararon force majeure. Qatar: 20% del gas mundial interrumpido. Saudi Aramco cierra Ras Tanura: 550K barriles/día. Kuwait y UAE cortaron producción por falta de almacenamiento."},
-        ].map((a,i)=><div key={i} onClick={()=>doPoint({id:`top_${i}`,name:a.txt.split(":")[0],c:a.c,s:5,st:"critico",fecha:"10 MAR 2026",det:a.det})} style={{flex:1,padding:"5px 10px",background:`${a.c}10`,border:`1px solid ${a.c}`,borderRadius:"4px",fontSize:"7.5px",color:a.c,cursor:"pointer",minWidth:"150px",backdropFilter:"blur(4px)",transition:"all 0.2s",animation:i===0?"warningPulse 2s ease infinite":"none"}} onMouseEnter={e=>e.currentTarget.style.background=`${a.c}25`} onMouseLeave={e=>e.currentTarget.style.background=`${a.c}10`}>{a.txt}</div>)}
+        {[{txt:"🔴 ISRAEL ATACÓ FORDOW POR PRIMERA VEZ — INSTALACIÓN NUCLEAR IRANÍ SUBTERRÁNEA",c:"#ff2020",det:"DÍA 12 — Israel lanzó bunker busters GBU-57 contra Fordow, la instalación nuclear más protegida de Irán a 80m de profundidad. IAEA confirma daños en la sala de centrifugadoras. Irán acusó a EE.UU. de complicidad. Nuevo máximo de escalada del conflicto. Brent sube $5 de golpe."},
+          {txt:"🗣️ TRUMP HABLÓ CON XI — CHINA OFRECE MEDIACIÓN — CONDICIONES RECHAZADAS",c:"#ffaa00",det:"Trump habló con Xi Jinping el martes. China propuso cese al fuego de 72 horas. Condición: EE.UU. retira carrier Ford del Golfo. Trump rechazó. Xi: continuaremos comprando petróleo iraní. Segunda llamada posible antes de la OTAN mañana."},
+          {txt:"🛡️ CUMBRE OTAN MAÑANA BRUSELAS — 32 PAÍSES — ARTÍCULO 4 Y 5 EN MESA",c:"#4466ff",det:"Cumbre extraordinaria OTAN el 12 de marzo en Bruselas. Artículo 4 ya activo por Turquía y Chipre. Se discutirá si Artículo 5 aplica (ataque a un miembro = ataque a todos). 8 de 32 países cumplen el 2% del PIB en defensa. Trump exige 5%."},
+        ].map((a,i)=><div key={i} onClick={()=>doPoint({id:`top_${i}`,name:a.txt.split(":")[0],c:a.c,s:5,st:"critico",fecha:"11 MAR 2026",det:a.det})} style={{flex:1,padding:"5px 10px",background:`${a.c}10`,border:`1px solid ${a.c}`,borderRadius:"4px",fontSize:"7.5px",color:a.c,cursor:"pointer",minWidth:"150px",backdropFilter:"blur(4px)",transition:"all 0.2s",animation:i===0?"warningPulse 2s ease infinite":"none"}} onMouseEnter={e=>e.currentTarget.style.background=`${a.c}25`} onMouseLeave={e=>e.currentTarget.style.background=`${a.c}10`}>{a.txt}</div>)}
       </div>}
       {mode==="disease"&&<div onClick={()=>doPoint(BASE_DISEASE[0])} style={{width:"100%",maxWidth:"980px",marginBottom:"6px",padding:"6px 14px",background:"rgba(255,34,0,0.08)",border:"1px solid #ff4400",borderRadius:"4px",fontSize:"8px",color:"#ff4400",cursor:"pointer",animation:"warningPulse 2.5s ease infinite",backdropFilter:"blur(4px)",position:"relative",zIndex:1}}>🔴 SARAMPIÓN MÉXICO: 9,074 CASOS — 7 ESTADOS FOCOS ROJOS — OPS ALERTA POR MUNDIAL 2026 — ⚠️ MPOX CLADE I YA EN EE.UU. SIN VIAJE A ÁFRICA — LLAMA 800-00-44800</div>}
 
@@ -837,13 +838,13 @@ export default function App(){
           <rect width={W} height={H} fill="#010610"/>
           {geo.sphere&&<path d={geo.sphere} fill="#010c1a" stroke={ac} strokeWidth="0.4" strokeOpacity="0.12"/>}
 
-          {/* RADAR SWEEP */}
-          {mode==="war"&&(()=>{const center=xy(26.6,50);if(!center)return null;const[cx,cy]=center,r=115,rad1=radarAngle*Math.PI/180,rad2=(radarAngle-35)*Math.PI/180;return(<g><circle cx={cx} cy={cy} r={r} fill={`${ac}08`}/>{[0.25,0.5,0.75,1].map(f=><circle key={f} cx={cx} cy={cy} r={r*f} fill="none" stroke={ac} strokeWidth="0.3" opacity="0.1"/>)}<path d={`M${cx},${cy} L${cx+Math.cos(rad1)*r},${cy+Math.sin(rad1)*r} A${r},${r} 0 0,0 ${cx+Math.cos(rad2)*r},${cy+Math.sin(rad2)*r} Z`} fill={ac} opacity="0.1"/><line x1={cx} y1={cy} x2={cx+Math.cos(rad1)*r} y2={cy+Math.sin(rad1)*r} stroke={ac} strokeWidth="1.2" opacity="0.5"/></g>);})()}
-
-          {/* COUNTRIES */}
+          {/* COUNTRIES — dibujados ANTES del radar para que el radar quede encima */}
           {geo.paths.map(({id,d})=>{const col=isoM[id],hasCE=!!mcd[id];return<path key={id} d={d} fill={col?`${col}1e`:"#0a0e1a"} stroke={col?col:"#0c1428"} strokeWidth={col?0.6:0.15} strokeOpacity={col?0.5:1} onMouseEnter={()=>doHover(id)} style={{cursor:hasCE?"pointer":"default",transition:"fill 0.2s"}} onMouseOver={e=>{if(col)e.target.setAttribute("fill",col+(hasCE?"55":"2a"));}} onMouseOut={e=>e.target.setAttribute("fill",col?`${col}1e`:"#0a0e1a")} onClick={()=>hasCE&&doCountry(id)}/>;
           })}
           {geo.borders&&<path d={geo.borders} fill="none" stroke="#0c1428" strokeWidth="0.2"/>}
+
+          {/* RADAR SWEEP — después de países para quedar ENCIMA de todo el continente */}
+          {mode==="war"&&(()=>{const center=xy(26.6,50);if(!center)return null;const[cx,cy]=center,r=115,rad1=radarAngle*Math.PI/180,rad2=(radarAngle-35)*Math.PI/180;return(<g style={{pointerEvents:"none"}}><circle cx={cx} cy={cy} r={r} fill={`${ac}06`}/>{[0.25,0.5,0.75,1].map(f=><circle key={f} cx={cx} cy={cy} r={r*f} fill="none" stroke={ac} strokeWidth="0.4" opacity="0.15"/>)}<path d={`M${cx},${cy} L${cx+Math.cos(rad1)*r},${cy+Math.sin(rad1)*r} A${r},${r} 0 0,0 ${cx+Math.cos(rad2)*r},${cy+Math.sin(rad2)*r} Z`} fill={ac} opacity="0.12"/><line x1={cx} y1={cy} x2={cx+Math.cos(rad1)*r} y2={cy+Math.sin(rad1)*r} stroke={ac} strokeWidth="1.4" opacity="0.6" style={{filter:`drop-shadow(0 0 3px ${ac})`}}/></g>);})()}
 
           {/* CONN LINES */}
           {connLines.map(l=><g key={l.key}><line x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke={l.col} strokeWidth="0.7" strokeOpacity="0.3" strokeDasharray="5,5"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite"/></line></g>)}
@@ -949,11 +950,11 @@ export default function App(){
       {/* NEWS TICKER */}
       {mode==="news"&&<div style={{marginTop:"7px",width:"100%",maxWidth:"980px",background:"rgba(10,8,0,0.8)",border:"1px solid rgba(255,200,0,0.1)",borderRadius:"4px",padding:"5px 0",overflow:"hidden",backdropFilter:"blur(4px)",position:"relative",zIndex:1}}>
         <div style={{fontSize:"8.5px",color:"#ffcc00",letterSpacing:"1.5px",whiteSpace:"nowrap",animation:"ticker 55s linear infinite",display:"inline-block",paddingLeft:"100%"}}>
-          🗣️ TRUMP SEÑALES MIXTAS — GUERRA COMPLETA Y VICTORIA TOTAL EL MISMO DÍA &nbsp;•&nbsp; 🛢️ BRENT TOCÓ $119 EL LUNES, REGRESA $90 &nbsp;•&nbsp; 🔴 BAHRAIN BAPCO + QATAR LNG FORCE MAJEURE &nbsp;•&nbsp; 🛢️ SAUDI ARAMCO CIERRA RAS TANURA — MAYOR REFINERÍA DEL MUNDO &nbsp;•&nbsp; ⚽ 5 FUTBOLISTAS IRANÍES ASILO EN AUSTRALIA &nbsp;•&nbsp; 💼 EMPLEOS USA -92K FEB — DESEMPLEO 4.4% &nbsp;•&nbsp; 💱 PESO MX {fx?`$${fx}/USD`:"PRESIONADO"} &nbsp;•&nbsp; ₿ BTC {crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"..."} &nbsp;•&nbsp; 🛡️ OTAN CUMBRE 12 MAR BRUSELAS &nbsp;•&nbsp; 🇹🇷 TURQUÍA DERRIBÓ MISIL IRANÍ &nbsp;•&nbsp; 🏥 168 NIÑAS EN ESCUELA IRANÍ — PENTÁGONO INVESTIGA &nbsp;•&nbsp; 🇨🇳 CHINA COMPRA PETRÓLEO IRANÍ CON DESCUENTO 50%
+          🔴 ISRAEL ATACÓ FORDOW — PRIMERA VEZ INSTALACIÓN NUCLEAR IRANÍ — BRENT SUBE $5 &nbsp;•&nbsp; 🗣️ TRUMP HABLÓ CON XI — MEDIACIÓN CHINA RECHAZADA &nbsp;•&nbsp; 🛡️ OTAN CUMBRE MAÑANA 12 MAR BRUSELAS — ARTÍCULO 4 Y 5 EN MESA &nbsp;•&nbsp; 🛢️ BRENT ~$95 — SUBE TRAS FORDOW &nbsp;•&nbsp; 📉 NASDAQ -3% — BOLSAS ROJAS &nbsp;•&nbsp; 🔴 BAHRAIN BAPCO + QATAR LNG FORCE MAJEURE — ORMUZ -95% &nbsp;•&nbsp; 🛢️ SAUDI ARAMCO RAS TANURA CERRADA &nbsp;•&nbsp; ⚽ 5 FUTBOLISTAS IRANÍES ASILO EN AUSTRALIA &nbsp;•&nbsp; 💼 EMPLEOS USA -92K FEB — DESEMPLEO 4.4% &nbsp;•&nbsp; 💱 PESO MX {fx?`$${fx}/USD`:"PRESIONADO"} &nbsp;•&nbsp; ₿ BTC {crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"..."} &nbsp;•&nbsp; 🇨🇳 CHINA SIGUE COMPRANDO PETRÓLEO IRANÍ PESE A PRESIÓN DE EE.UU. &nbsp;•&nbsp; ☢️ IAEA CONFIRMA DAÑOS EN FORDOW — CENTRIFUGADORAS AFECTADAS
         </div>
       </div>}
 
-      <div style={{marginTop:"8px",fontSize:"6px",color:"rgba(255,255,255,0.07)",letterSpacing:"2px",textAlign:"center",position:"relative",zIndex:1}}>MONITOR GLOBAL v10 FULL · USGS · NOAA · OPEN-METEO · OPENSKY · NASA EONET · COINGECKO · FRANKFURTER · CLAUDE AI · 10 MAR 2026</div>
+      <div style={{marginTop:"8px",fontSize:"6px",color:"rgba(255,255,255,0.07)",letterSpacing:"2px",textAlign:"center",position:"relative",zIndex:1}}>MONITOR GLOBAL v10 FULL · USGS · NOAA · OPEN-METEO · OPENSKY · NASA EONET · COINGECKO · FRANKFURTER · CLAUDE AI · 11 MAR 2026 · DÍA 12</div>
 
       <style>{`
         @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
