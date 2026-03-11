@@ -68,7 +68,7 @@ const MODE_VOICE = {
   war:"Conflictos globales. Día doce de la guerra Irán, Estados Unidos e Israel. Israel atacó por primera vez instalaciones nucleares en Fordow. Trump habló con Xi Jinping sobre posible mediación china. Brent sube de nuevo a noventa y cinco dólares. Cumbre extraordinaria de la OTAN mañana en Bruselas.",
   disease:"Modo enfermedades. Nueve mil setenta y cuatro casos de sarampión en México. Siete estados en focos rojos incluyendo sedes del Mundial veinte veintiséis. Mpox clade uno ya en Estados Unidos sin historial de viaje. Nipah activo en India con mortalidad del setenta por ciento.",
   climate:"Modo clima y desastres naturales. Frente Frío treinta y nueve activo en México hoy martes. Veintitrés tornados en veinticuatro horas en Estados Unidos. Ola de calor histórica en India con cincuenta y un grados. Sismos USGS y huracanes NOAA en tiempo real.",
-  news:"Modo economía. Brent sube de nuevo a noventa y cinco dólares tras el ataque israelí a Fordow. Nasdaq cayó tres por ciento. Cumbre OTAN mañana en Bruselas. Los aranceles del veinticinco por ciento de Trump a Europa entran en vigor el quince de marzo. Fed pausó tasas de emergencia.",
+  news:"Modo economía. Brent sube a noventa y cinco dólares tras el ataque israelí a Fordow. Nasdaq cayó tres por ciento. Cumbre OTAN mañana en Bruselas. Los aranceles del veinticinco por ciento de Trump a Europa entran en vigor el quince de marzo. Fed pausó tasas de emergencia. Ahora, qué hacer con tu dinero en este momento. Petróleo y energía: comprar acciones de Exxon, Chevron o Petróleos Brasileños que suben con el Brent. Metales: oro y plata como refugio, ya en máximos históricos. En México: CETES al doce por ciento protegen tus ahorros de la inflación y la devaluación del peso. Evita cambiar dólares ahora con el peso en mínimos. Si tienes dólares, espera a que el tipo de cambio baje. En acciones mexicanas: Pemex no, alto riesgo. Considera Fibras con dólar alto. Criptomonedas: Bitcoin sube en crisis pero con alta volatilidad, solo si tienes tolerancia al riesgo. Lo más seguro ahora mismo: CETES, oro, y acciones energéticas estadounidenses.",
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -521,7 +521,7 @@ function NewsPanel({ fx, crypto, quakes }) {
   return (
     <div style={{background:"rgba(5,4,0,0.95)",border:"1px solid #ffcc0033",borderRadius:"8px",padding:"12px",backdropFilter:"blur(10px)"}}>
       <div style={{display:"flex",gap:"4px",marginBottom:"10px",borderBottom:"1px solid #ffcc0020",paddingBottom:"8px"}}>
-        {[["markets","📊 MERCADOS"],["energy","🛢️ ENERGÍA"],["conversor","💱 CONVERSOR"],["agenda","📅 AGENDA"]].map(([t,l])=>(
+        {[["markets","📊 MERCADOS"],["energy","🛢️ ENERGÍA"],["conversor","💱 CONVERSOR"],["invertir","📈 INVERTIR"],["agenda","📅 AGENDA"]].map(([t,l])=>(
           <button key={t} onClick={()=>setTab(t)} style={{padding:"4px 10px",background:tab===t?"#ffcc0033":"transparent",border:`1px solid ${tab===t?"#ffcc00":"#ffcc0022"}`,borderRadius:"4px",color:tab===t?"#ffcc00":"#ffcc0066",fontFamily:"'Courier New',monospace",fontSize:"7.5px",cursor:"pointer",letterSpacing:"1px"}}>{l}</button>
         ))}
       </div>
@@ -595,6 +595,69 @@ function NewsPanel({ fx, crypto, quakes }) {
           ))}
         </div>
       </div>}
+      {tab==="invertir"&&<div style={{display:"flex",flexDirection:"column",gap:"5px",maxHeight:"220px",overflowY:"auto"}}>
+        {/* Header */}
+        <div style={{padding:"6px 10px",background:"rgba(255,200,0,0.08)",border:"1px solid #ffcc0030",borderRadius:"5px",marginBottom:"2px"}}>
+          <div style={{fontSize:"7.5px",color:"#ffcc00",marginBottom:"2px",fontWeight:"bold"}}>📈 ANÁLISIS DE INVERSIÓN — CRISIS GOLFO · 11 MAR 2026</div>
+          <div style={{fontSize:"7px",color:"rgba(255,255,255,0.35)",lineHeight:1.6}}>⚠️ Esto es orientativo, no asesoría financiera certificada. Consulta a un profesional antes de invertir.</div>
+        </div>
+
+        {/* COMPRAR */}
+        <div style={{fontSize:"7px",color:"#44ff88",letterSpacing:"2px",fontWeight:"bold",padding:"2px 4px"}}>✅ COMPRAR / MANTENER</div>
+        {[
+          {tick:"XOM / CVX",n:"Exxon & Chevron",cat:"🛢️ PETRÓLEO USA",c:"#44ff88",risk:"MEDIO",hor:"CORTO",txt:"Brent a $95 y subiendo. Fordow atacada = Ormuz más presionado. Ganancias récord por cada $1 que sube el crudo. ETF sugerido: XLE (Energy Select SPDR)."},
+          {tick:"GLD / IAU",n:"Oro (ETF o físico)",cat:"🥇 REFUGIO",c:"#ffdd00",risk:"BAJO",hor:"CORTO/MED",txt:"Oro en $3,200/oz — nuevo récord histórico. En tiempos de guerra y devaluación es el refugio clásico. En México puedes comprar Onzas Libertad en Casa de Moneda."},
+          {tick:"CETES",n:"CETES México",cat:"🇲🇽 RENTA FIJA",c:"#88cc00",risk:"MUY BAJO",hor:"28/91 DÍAS",txt:"Rendimiento actual ~12% anual. Protege contra inflación y devaluación del peso. Disponible desde $100 en cetesdirecto.com.mx. La opción más segura ahora mismo en México."},
+          {tick:"SLV / AG",n:"Plata",cat:"🥈 METAL",c:"#aaaaff",risk:"MEDIO",hor:"MEDIANO",txt:"Plata más volátil que el oro pero con mayor potencial de subida. Sube con el oro y tiene uso industrial estratégico (paneles solares, chips)."},
+          {tick:"PBR",n:"Petrobras Brasil",cat:"🛢️ LATAM",c:"#44ffaa",risk:"MEDIO-ALTO",hor:"CORTO",txt:"Brasil exporta petróleo y se beneficia directamente del Brent alto. Real brasileño subió 4%. Alternativa latinoamericana al petróleo del Golfo."},
+          {tick:"BTC",n:"Bitcoin",cat:"₿ CRIPTO",c:"#ffdd00",risk:"ALTO",hor:"ESPECULATIVO",txt:"Bitcoin tiende a subir en crisis geopolíticas severas. Actualmente ~$62K. Solo si tienes tolerancia alta al riesgo. No más del 5-10% del portafolio."},
+        ].map((inv,i)=>(
+          <div key={i} onClick={()=>speakText(`${inv.n}: ${inv.txt} Riesgo: ${inv.risk}. Horizonte: ${inv.hor}.`)} style={{display:"flex",gap:"10px",padding:"7px 10px",background:`${inv.c}08`,border:`1px solid ${inv.c}22`,borderRadius:"5px",cursor:"pointer",transition:"all 0.15s",alignItems:"flex-start"}} onMouseEnter={e=>e.currentTarget.style.background=`${inv.c}1e`} onMouseLeave={e=>e.currentTarget.style.background=`${inv.c}08`}>
+            <div style={{minWidth:"68px"}}>
+              <div style={{fontSize:"9px",fontWeight:"900",color:inv.c,fontFamily:"'Courier New',monospace"}}>{inv.tick}</div>
+              <div style={{fontSize:"6px",color:"rgba(255,255,255,0.35)",marginTop:"1px"}}>{inv.cat}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:"2px",marginTop:"4px"}}>
+                <span style={{fontSize:"5.5px",background:`${inv.c}22`,color:inv.c,padding:"1px 4px",borderRadius:"2px",textAlign:"center"}}>⚡ {inv.risk}</span>
+                <span style={{fontSize:"5.5px",background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.3)",padding:"1px 4px",borderRadius:"2px",textAlign:"center"}}>⏱ {inv.hor}</span>
+              </div>
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:"8.5px",color:"#fff",fontWeight:"bold",marginBottom:"3px"}}>{inv.n}</div>
+              <div style={{fontSize:"7.5px",color:"rgba(255,255,255,0.6)",lineHeight:1.6}}>{inv.txt}</div>
+            </div>
+            <div style={{fontSize:"11px",opacity:0.4,flexShrink:0}}>🔊</div>
+          </div>
+        ))}
+
+        {/* EVITAR */}
+        <div style={{fontSize:"7px",color:"#ff4444",letterSpacing:"2px",fontWeight:"bold",padding:"4px 4px 2px"}}>❌ EVITAR / PRECAUCIÓN</div>
+        {[
+          {tick:"PEMEX",n:"Pemex",cat:"🇲🇽 PETRÓLEO MX",c:"#ff4444",txt:"Alto endeudamiento. A pesar del Brent alto, los problemas estructurales persisten. No apta para inversión defensiva."},
+          {tick:"USD→MXN",n:"Cambiar dólares ahora",cat:"💱 DIVISAS",c:"#ff6600",txt:"Peso en mínimos históricos. Si tienes dólares, espera. El tipo de cambio puede mejorar cuando baje la tensión geopolítica."},
+          {tick:"AIRLINES",n:"Aerolíneas globales",cat:"✈️ TRANSPORTE",c:"#ff4400",txt:"Combustible +22%. Pasajeros menos por miedo. Márgenes aplastados. Evitar hasta que el Brent baje."},
+          {tick:"BONDS EU",n:"Bonos europeos",cat:"🇪🇺 RENTA FIJA",c:"#ff8800",txt:"Aranceles Trump 25% el 15 de marzo. Europa en incertidumbre máxima. Esperar resultado de la OTAN mañana."},
+        ].map((inv,i)=>(
+          <div key={i} onClick={()=>speakText(`${inv.n}: ${inv.txt}`)} style={{display:"flex",gap:"10px",padding:"6px 10px",background:`${inv.c}08`,border:`1px solid ${inv.c}22`,borderRadius:"5px",cursor:"pointer",transition:"all 0.15s",alignItems:"flex-start"}} onMouseEnter={e=>e.currentTarget.style.background=`${inv.c}1e`} onMouseLeave={e=>e.currentTarget.style.background=`${inv.c}08`}>
+            <div style={{minWidth:"68px"}}><div style={{fontSize:"9px",fontWeight:"900",color:inv.c}}>{inv.tick}</div><div style={{fontSize:"6px",color:"rgba(255,255,255,0.3)",marginTop:"1px"}}>{inv.cat}</div></div>
+            <div style={{flex:1}}><div style={{fontSize:"8px",color:"#ff8888",fontWeight:"bold",marginBottom:"2px"}}>{inv.n}</div><div style={{fontSize:"7.5px",color:"rgba(255,255,255,0.55)",lineHeight:1.5}}>{inv.txt}</div></div>
+          </div>
+        ))}
+
+        {/* ESTRATEGIA MEXICO */}
+        <div onClick={()=>speakText("Estrategia para México en esta crisis. Prioridad uno: mete el dinero que necesites en los próximos tres meses en CETES de 28 días al doce por ciento. Prioridad dos: si tienes dólares no los cambies, el peso puede recuperarse cuando baje la tensión. Prioridad tres: considera una posición pequeña en oro o ETF de energía estadounidense. Prioridad cuatro: nada en bolsa mexicana hasta que bajen los aranceles del treinta y cinco por ciento.")} style={{padding:"8px 12px",background:"rgba(136,204,0,0.08)",border:"1px solid #88cc0033",borderRadius:"5px",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(136,204,0,0.18)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(136,204,0,0.08)"}>
+          <div style={{fontSize:"8px",fontWeight:"bold",color:"#88cc00",marginBottom:"5px"}}>🇲🇽 ESTRATEGIA PARA MEXICANOS — CRISIS ACTUAL</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"4px"}}>
+            {[["1️⃣ CETES 28d","~12% anual. Seguro, líquido. cetesdirecto.com.mx"],["2️⃣ NO cambies USD","Espera que el peso se recupere. >18 = mínimos."],["3️⃣ ORO pequeño","5-10% del portafolio. Refugio clásico."],["4️⃣ Espera en bolsa","Aranceles 35% + guerra = incertidumbre máxima."]].map(([t,d],i)=>(
+              <div key={i} style={{background:"rgba(136,204,0,0.05)",borderRadius:"3px",padding:"5px 7px"}}>
+                <div style={{fontSize:"8px",color:"#88cc00",fontWeight:"bold"}}>{t}</div>
+                <div style={{fontSize:"6.5px",color:"rgba(255,255,255,0.5)",marginTop:"1px",lineHeight:1.5}}>{d}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{fontSize:"6px",color:"rgba(136,204,0,0.5)",marginTop:"5px"}}>🔊 Toca para escuchar la estrategia completa · ⚠️ No es asesoría certificada</div>
+        </div>
+      </div>}
+
       {tab==="agenda"&&<div style={{display:"flex",flexDirection:"column",gap:"4px",maxHeight:"200px",overflowY:"auto"}}>
         {[{d:"10 MAR",ev:"Trump señales mixtas — mercados suben y bajan",c:"#ff6600",icon:"🗣️"},
           {d:"11 MAR",ev:"Reunión Fed: ¿pausa en tasas por petróleo?",c:"#ffaa00",icon:"🏦"},
