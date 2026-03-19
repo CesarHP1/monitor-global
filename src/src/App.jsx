@@ -1,6 +1,6 @@
 // @ts-nocheck
 // MONITOR GLOBAL v13 — 20 MAR 2026 — DÍA 21 — ICONOS TIEMPO REAL
-// APIs GRATIS: USGS · NOAA · Open-Meteo · OpenSky · NASA EONET · CoinGecko · Frankfurter · AirQuality · Nominatim
+// APIs GRATIS: USGS · NOAA · Open-Meteo · OpenSky · NASA EONET · CoinGecko · Frankfurter
 // NUEVO: Iconos dinámicos por condiciones reales · Animaciones contextualizadas · Alertas visuales live
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -13,7 +13,6 @@ const FALLBACK_LAT = 19.2826, FALLBACK_LNG = -99.6557;
 // ICONOS DINÁMICOS SEGÚN CONDICIONES REALES
 // ═══════════════════════════════════════════════════════════════════
 
-// Weather icons based on real WMO codes + time of day
 const getWeatherIcon = (code, hour = new Date().getHours()) => {
   const isNight = hour < 6 || hour > 20;
   const base = {
@@ -35,80 +34,40 @@ const getWeatherIcon = (code, hour = new Date().getHours()) => {
   return base[code] || "🌡️";
 };
 
-// Dynamic severity icons based on real data
-const getSeverityIcon = (type, value, threshold) => {
-  if (value >= threshold * 1.5) return "🔴";
-  if (value >= threshold) return "🟠";
-  if (value >= threshold * 0.7) return "🟡";
-  return "🟢";
-};
-
-// Hurricane category icon (real-time from NOAA)
 const getHurricaneIcon = (kts) => {
   const cat = parseInt(kts) || 0;
-  if (cat >= 137) return "🌀🔴"; // CAT5
-  if (cat >= 113) return "🌀🟠"; // CAT4
-  if (cat >= 96) return "🌀🟡";  // CAT3
-  if (cat >= 64) return "🌀🟢";  // CAT2
-  return "🌀⚪"; // Tropical
+  if (cat >= 137) return "🌀";
+  if (cat >= 113) return "🌀🟠";
+  if (cat >= 96) return "🌀🟡";
+  if (cat >= 64) return "🌀🟢";
+  return "🌀⚪";
 };
 
-// Earthquake icon based on magnitude (real-time from USGS)
 const getQuakeIcon = (mag) => {
   if (mag >= 8) return "🌋🔴";
   if (mag >= 7) return "🌋🟠";
   if (mag >= 6) return "🌋🟡";
   if (mag >= 5.5) return "🌋🟢";
-  return "🌋⚪";
+  return "🌋";
 };
 
-// Disease outbreak icon based on cases (real-time)
 const getDiseaseIcon = (cases, trend) => {
   const num = parseInt(cases.replace(/[^0-9]/g, "")) || 0;
   if (trend.includes("+") && num > 1000) return "🦠🔴";
   if (num > 500) return "🦠🟠";
   if (num > 100) return "🦠🟡";
-  return "🦠🟢";
+  return "🦠";
 };
 
-// Market icon based on change percentage (real-time)
 const getMarketIcon = (change) => {
   const pct = parseFloat(change) || 0;
-  if (pct >= 5) return "📈🔴";
+  if (pct >= 5) return "📈";
   if (pct >= 2) return "📈🟢";
   if (pct >= -2) return "📊⚪";
   if (pct >= -5) return "📉🟠";
-  return "📉🔴";
+  return "📉";
 };
 
-// Country status icon based on conflict level (real-time)
-const getCountryStatusIcon = (mode, countryId, data) => {
-  if (mode === "war") {
-    if (data?.st === "guerra") return "⚔️";
-    if (data?.st === "atacado") return "💥";
-    if (data?.st === "critico") return "🔴";
-    if (data?.st === "tension") return "⚠️";
-    return "🛡️";
-  }
-  if (mode === "disease") {
-    if (data?.c === "#ff2200") return "🔴";
-    if (data?.c === "#ff6600") return "🟠";
-    return "🟡";
-  }
-  if (mode === "climate") {
-    if (data?.st === "extremo") return "🚨";
-    if (data?.st === "activo") return "⚡";
-    return "📊";
-  }
-  if (mode === "news") {
-    if (data?.st === "critico") return "💰";
-    if (data?.st === "activo") return "📈";
-    return "📊";
-  }
-  return "📍";
-};
-
-// Time-based greeting icon
 const getTimeIcon = () => {
   const h = new Date().getHours();
   if (h >= 5 && h < 12) return "🌅";
@@ -117,7 +76,6 @@ const getTimeIcon = () => {
   return "🌙";
 };
 
-// Day counter icon
 const getDayIcon = (day) => {
   if (day <= 7) return "📅 Semana 1";
   if (day <= 14) return "📅 Semana 2";
@@ -126,19 +84,20 @@ const getDayIcon = (day) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// SPEECH ENGINE v2
+// SPEECH ENGINE
 // ═══════════════════════════════════════════════════════════════════
 let _sq = [], _spk = false, _voice = null, _kat = null, _rate = 1.05;
 
 function pickVoice() {
-  const vs = window.speechSynthesis.getVoices();
+  const vs = window.speechSynthesis?.getVoices() || [];
   if (!vs.length) return null;
   const rx = /monica|paulina|lucia|sabina|rosa|elena|conchita|angelica|lupe|paloma|susana|pilar|maria|fernanda|valeria|camila|andrea|sofia|isabel|beatriz/i;
-  const fem = vs.filter(v => v.lang.startsWith("es") && rx.test(v.name));
-  return fem.length ? fem[Math.floor(Math.random() * fem.length)] : vs.find(v => v.lang.startsWith("es") && v.name.includes("Google")) || vs.find(v => v.lang.startsWith("es")) || vs[0];
+  const fem = vs.filter(v => v.lang?.startsWith("es") && rx.test(v.name));
+  return fem.length ? fem[Math.floor(Math.random() * fem.length)] : vs.find(v => v.lang?.startsWith("es")) || vs[0];
 }
 
 function speakText(txt, rate = 1.05) {
+  if (!window.speechSynthesis) return;
   try {
     stopSpeech();
     _rate = rate;
@@ -162,13 +121,7 @@ function _pq() {
     if (_voice) u.voice = _voice;
     u.onstart = () => { _spk = true; };
     u.onend = () => { _spk = false; setTimeout(_pq, 60); };
-    u.onerror = e => { if (e.error !== "interrupted") { _spk = false; setTimeout(_pq, 60); } };
-    if (_kat) clearInterval(_kat);
-    _kat = setInterval(() => {
-      if (!window.speechSynthesis.speaking) { clearInterval(_kat); return; }
-      window.speechSynthesis.pause();
-      window.speechSynthesis.resume();
-    }, 9000);
+    u.onerror = () => { _spk = false; setTimeout(_pq, 60); };
     window.speechSynthesis.speak(u);
   } catch (e) { _spk = false; }
 }
@@ -177,14 +130,8 @@ function stopSpeech() {
   _sq = [];
   _spk = false;
   if (_kat) { clearInterval(_kat); _kat = null; }
-  try { window.speechSynthesis.cancel(); } catch (e) {}
+  try { window.speechSynthesis?.cancel(); } catch (e) {}
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// WEATHER CODES
-// ═══════════════════════════════════════════════════════════════════
-const wmoIcon = c => getWeatherIcon(c);
-const wmoText = c => c===0?"Despejado":c<=2?"Parcialmente nublado":c<=3?"Nublado":c<=48?"Niebla":c<=57?"Llovizna":c<=65?"Lluvia":c<=67?"Lluvia helada":c<=77?"Nieve":c<=82?"Chubascos":c<=84?"Chubascos de nieve":"Tormenta eléctrica";
 
 // ═══════════════════════════════════════════════════════════════════
 // CONSTANTES
@@ -202,7 +149,6 @@ const TITLES = {
 const NEXT   = { war:"🦠 ENFERMEDADES", disease:"🌍 CLIMA", climate:"📰 ECONOMÍA", news:"⚔️ CONFLICTOS" };
 const STATUS_L = { guerra:"EN GUERRA", atacado:"BAJO ATAQUE", activo:"EN CURSO", tension:"EN TENSIÓN", critico:"CRÍTICO", alerta:"EN ALERTA", extremo:"EXTREMO" };
 
-// Dynamic mode voice based on real-time data
 const MODE_VOICE = {
   war:`Conflictos globales. Día veintiuno. ${getTimeIcon()} Israel atacó South Pars. Irán respondió con misiles. Brent en tiempo real. F-35 dañado. Actualización continua.`,
   disease:`Modo enfermedades. ${getDiseaseIcon("9074", "+12%")} Sarampión en México. Mpox en EE.UU. Nipah en India. Datos OMS en vivo.`,
@@ -234,17 +180,17 @@ const ISO_COL = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// ALL COUNTRY DATA — con iconos dinámicos
+// ALL COUNTRY DATA
 // ═══════════════════════════════════════════════════════════════════
 const ALL_COUNTRY_DATA = {
   war: {
     "840":{name:"🇺🇸 EE.UU.",fecha:"DÍA 21",c:"#ff2020",icon:"⚔️",det:"DÍA 21 — 13 soldados muertos. 7,000+ objetivos. Joe Kent renunció. F-35 dañado. Costo $20B+."},
     "364":{name:"🇮🇷 IRÁN",fecha:"DÍA 21",c:"#ff1a1a",icon:"💥",det:"DÍA 21 — 1,444+ civiles / 4,800+ militares. Internet 480+ horas. 29/31 provincias bajo conflicto."},
     "376":{name:"🇮🇱 ISRAEL",fecha:"DÍA 21",c:"#ff1a1a",icon:"⚔️",det:"DÍA 21 — Atacó South Pars. Asesinatos clave. Trump: actuó por enojo."},
-    "422":{name:"🇱🇧 LÍBANO",fecha:"DÍA 21",c:"#ff4444",icon:"🔴",det:"600+ muertos. Hezbollah débil. Colapso humanitario."},
+    "422":{name:"🇱 LÍBANO",fecha:"DÍA 21",c:"#ff4444",icon:"🔴",det:"600+ muertos. Hezbollah débil. Colapso humanitario."},
     "804":{name:"🇺🇦 UCRANIA",fecha:"EN CURSO",c:"#ff8800",icon:"⚔️",det:"Guerra año 5. Ayuda con drones Shahed. Zelenski: Tercera Guerra Mundial."},
-    "643":{name:"🇷🇺 RUSIA ⚠️",fecha:"20 MAR",c:"#ff4400",icon:"🕵️",det:"DÍA 21 — Brent $115: ingresos máximos. Inteligencia a Irán. Ucrania en el olvido."},
-    "484":{name:"🇲🇽 MÉXICO",fecha:"20 MAR",c:"#88cc00",icon:"📊",det:"DÍA 21 — Gasolina +28%. Peso >19/USD. Aranceles 35%. Sarampión 7 estados."},
+    "643":{name:"🇷 RUSIA ⚠️",fecha:"20 MAR",c:"#ff4400",icon:"🕵️",det:"DÍA 21 — Brent $115: ingresos máximos. Inteligencia a Irán. Ucrania en el olvido."},
+    "484":{name:"🇲 MÉXICO",fecha:"20 MAR",c:"#88cc00",icon:"📊",det:"DÍA 21 — Gasolina +28%. Peso >19/USD. Aranceles 35%. Sarampión 7 estados."},
   },
   disease: {
     "484":{name:"🇲🇽 MÉXICO 🔴",fecha:"MAR 2026",c:"#ff2200",icon:"🦠",det:"9,074 casos sarampión. 7 estados focos rojos. OPS alerta Mundial 2026."},
@@ -254,18 +200,18 @@ const ALL_COUNTRY_DATA = {
   },
   climate: {
     "840":{name:"🇺🇸 TORNADOS 🌪️",fecha:"MAR 2026",c:"#aa44ff",icon:"🌪️",det:"23 tornados 24h. 3 EF4. 8 muertos. Tornado Alley activo."},
-    "356":{name:"🇮🇳 INDIA 🔥",fecha:"EN CURSO",c:"#ff2200",icon:"🔥",det:"47-51°C. 3,200 muertes. Récord temperatura. 8 estados alerta."},
-    "484":{name:"🇲🇽 MÉXICO 🌀❄️",fecha:"MAR 2026",c:"#8844ff",icon:"🧊",det:"Frente Frío 39. Nieve posible Nevado Toluca. Mínimas 3-5°C CDMX."},
+    "356":{name:"🇮 INDIA 🔥",fecha:"EN CURSO",c:"#ff2200",icon:"🔥",det:"47-51°C. 3,200 muertes. Récord temperatura. 8 estados alerta."},
+    "484":{name:"🇲 MÉXICO 🌀❄️",fecha:"MAR 2026",c:"#8844ff",icon:"🧊",det:"Frente Frío 39. Nieve posible Nevado Toluca. Mínimas 3-5°C CDMX."},
   },
   news: {
-    "840":{name:"🇺🇸 EE.UU.",fecha:"20 MAR",c:"#ff6600",icon:"💰",det:"DÍA 21 — Joe Kent renunció. Costo $20B+. Aranceles 25% Europa. Brent $115."},
+    "840":{name:"🇺 EE.UU.",fecha:"20 MAR",c:"#ff6600",icon:"💰",det:"DÍA 21 — Joe Kent renunció. Costo $20B+. Aranceles 25% Europa. Brent $115."},
     "484":{name:"🇲🇽 MÉXICO",fecha:"20 MAR",c:"#ffaa44",icon:"💱",det:"DÍA 21 — Gasolina +28%. Peso >19/USD. FMI: recesión Q3 2026."},
-    "634":{name:"🇶🇦 QATAR",fecha:"20 MAR",c:"#ff8800",icon:"🛢️",det:"DÍA 21 — Ras Laffan atacado. -17% LNG mundial. $20B pérdidas anuales."},
+    "634":{name:"🇶 QATAR",fecha:"20 MAR",c:"#ff8800",icon:"🛢️",det:"DÍA 21 — Ras Laffan atacado. -17% LNG mundial. $20B pérdidas anuales."},
   },
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// BASE DATA POINTS — con iconos dinámicos
+// BASE DATA POINTS
 // ═══════════════════════════════════════════════════════════════════
 const BASE_WAR = [
   {id:"usa",name:"EE.UU.",lat:38,lng:-97,c:"#ff2020",s:5,st:"guerra",icon:"⚔️",conn:["iran"],fecha:"DÍA 21",det:"DÍA 21 — 13 soldados muertos. Joe Kent renunció. F-35 dañado."},
@@ -294,7 +240,7 @@ const BASE_NEWS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════
-// LIVE HOOKS — Actualización en tiempo real
+// LIVE HOOKS
 // ═══════════════════════════════════════════════════════════════════
 
 function useFX(){
@@ -383,7 +329,7 @@ function useEONET(active){
 }
 
 function useGeoLocation(){
-  const[l,setL]=useState({lat:FALLBACK_LAT,lng:FALLBACK_LNG,municipio:"Cargando...",tz:"America/Mexico_City"});
+  const[l,setL]=useState({lat:FALLBACK_LAT,lng:FALLBACK_LNG,municipio:"Ciudad de México",tz:"America/Mexico_City"});
   useEffect(()=>{
     if(!navigator.geolocation) return;
     const ok=async(pos)=>{
@@ -447,38 +393,97 @@ function useAttacks(active){
   return at;
 }
 
+function useQuakes(){
+  const[q,setQ]=useState([]);
+  useEffect(()=>{
+    const g=async()=>{
+      try{
+        const r=await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/5.0_day.geojson");
+        const d=await r.json();
+        const now=Date.now();
+        setQ(d.features.filter(f=>f.properties.mag>=5.5&&(now-f.properties.time)<48*3600*1000).map(f=>({
+          id:f.id,mag:f.properties.mag,place:f.properties.place||"Océano",
+          lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],
+          depth:Math.round(f.geometry.coordinates[2]),time:f.properties.time,
+          icon:getQuakeIcon(f.properties.mag)
+        })));
+      }catch(e){}
+    };
+    g();
+    const iv=setInterval(g,5*60*1000);
+    return()=>clearInterval(iv);
+  },[]);
+  return q;
+}
+
+function useHurricanes(){
+  const[h,setH]=useState([]);
+  const[hp,setHp]=useState({});
+  useEffect(()=>{
+    const g=async()=>{
+      try{
+        const r=await fetch("https://www.nhc.noaa.gov/CurrentStorms.json");
+        const d=await r.json();
+        if(d.activeStorms?.length){
+          const a=d.activeStorms.map(s=>({
+            id:s.id,
+            name:s.name||"Storm",
+            kts:parseInt(s.intensity)||65,
+            lat:parseFloat(s.latitudeNumeric)||20,
+            lng:parseFloat(s.longitudeNumeric)||-85,
+            dir:parseInt(s.movementDir)||315,
+            spd:parseInt(s.movementSpeed)||12,
+            icon:getHurricaneIcon(parseInt(s.intensity)||65)
+          }));
+          setH(a);
+          setHp(Object.fromEntries(a.map(h=>[h.id,{lat:h.lat,lng:h.lng}])));
+        }else{
+          setH([]);
+          setHp({});
+        }
+      }catch(e){
+        setH([]);
+        setHp({});
+      }
+    };
+    g();
+    const iv=setInterval(g,30*60*1000);
+    return()=>clearInterval(iv);
+  },[]);
+  return [h,hp];
+}
+
 // ═══════════════════════════════════════════════════════════════════
-// WEATHER WIDGET — Iconos en tiempo real
+// CARRIERS & ATTACKS
+// ═══════════════════════════════════════════════════════════════════
+const CARRIERS = [
+  {id:"ford",name:"USS FORD",flag:"🇺🇸",pais:"USA",lat:22.8,lng:61.5,dlat:0.008,dlng:-0.010,det:"USS Gerald R. Ford CVN-78. Mar Arábigo occidental."},
+  {id:"ike",name:"USS IKE",flag:"🇺🇸",pais:"USA",lat:13.8,lng:54.2,dlat:0.006,dlng:0.007,det:"USS Eisenhower CVN-69. Golfo de Adén."},
+  {id:"tr",name:"USS ROSVLT",flag:"🇺🇸",pais:"USA",lat:18.2,lng:58.5,dlat:0.009,dlng:-0.007,det:"USS Theodore Roosevelt CVN-71. Mar de Omán."},
+  {id:"linc",name:"USS LINCOLN",flag:"🇺🇸",pais:"USA",lat:13.1,lng:48.8,dlat:0.006,dlng:0.005,det:"USS Lincoln CVN-72. Mar Rojo sur."},
+  {id:"dg",name:"CHARLES D.G.",flag:"🇫",pais:"FRANCE",lat:35.2,lng:26.1,dlat:-0.004,dlng:0.009,det:"Charles de Gaulle R91. Mediterráneo oriental."},
+];
+
+const ATTACK_ROUTES = [
+  {from:{lat:32.4,lng:53.7},to:{lat:31.0,lng:34.9},col:"#ff4400",w:1.2},
+  {from:{lat:31.0,lng:34.9},to:{lat:32.4,lng:53.7},col:"#4488ff",w:1.2},
+  {from:{lat:22.8,lng:61.5},to:{lat:26.6,lng:56.5},col:"#4488ff",w:1.0},
+  {from:{lat:32.4,lng:53.7},to:{lat:26.2,lng:50.5},col:"#ff6600",w:1.0},
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// WEATHER WIDGET
 // ═══════════════════════════════════════════════════════════════════
 function WeatherWidget({ac,loc}){
   const[wx,setWx]=useState(null);
-  const[rain,setRain]=useState(null);
-  const[aqi,setAqi]=useState(null);
   
   useEffect(()=>{
     if(!loc?.lat) return;
     const load=async()=>{
       try{
-        const[wr,ar]=await Promise.all([
-          fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lng}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m&hourly=precipitation_probability&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=${encodeURIComponent(loc.tz)}&forecast_days=2`),
-          fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${loc.lat}&longitude=${loc.lng}&current=european_aqi,pm2_5&timezone=${encodeURIComponent(loc.tz)}`)
-        ]);
+        const wr=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lng}&current=temperature_2m,weather_code&timezone=auto`);
         const d=await wr.json();
         setWx(d);
-        const hr=d.hourly;
-        if(hr){
-          const nowH=new Date().getHours();
-          for(let i=nowH;i<Math.min(hr.time.length,nowH+18);i++){
-            if((hr.precipitation_probability[i]||0)>=40){
-              setRain({hour:new Date(hr.time[i]).getHours(),prob:hr.precipitation_probability[i]});
-              break;
-            }
-          }
-        }
-        try{
-          const aq=await ar.json();
-          if(aq?.current) setAqi(aq.current);
-        }catch(e){}
       }catch(e){}
     };
     load();
@@ -486,65 +491,25 @@ function WeatherWidget({ac,loc}){
     return()=>clearInterval(iv);
   },[loc?.lat,loc?.lng]);
 
-  const handleClick=()=>{
-    if(!wx?.current) return;
-    const c=wx.current, temp=Math.round(c.temperature_2m), feels=Math.round(c.apparent_temperature);
-    const wind=Math.round(c.wind_speed_10m);
-    const tmax=wx.daily?Math.round(wx.daily.temperature_2m_max[0]):"?";
-    const tmin=wx.daily?Math.round(wx.daily.temperature_2m_min[0]):"?";
-    const rainPct=wx.daily?wx.daily.precipitation_probability_max[0]:0;
-    const conds=[];
-    const code=c.weather_code;
-    if(code>=95) conds.push("hay tormenta eléctrica activa");
-    else if(code>=80) conds.push("hay chubascos activos");
-    else if(code>=61) conds.push("está lloviendo");
-    else if(code>=51) conds.push("hay llovizna ligera");
-    else if(code>=45) conds.push("hay niebla");
-    if(wind>50) conds.push(`vientos muy fuertes de ${wind} km/h`);
-    if(temp<=0) conds.push("temperatura bajo cero");
-    if(temp>=35) conds.push(`calor extremo de ${temp} grados`);
-    if(!conds.length) conds.push(`${wmoText(code).toLowerCase()}`);
-    let aqTxt="";
-    if(aqi?.european_aqi!=null){
-      const v=aqi.european_aqi;
-      aqTxt=` Calidad del aire: ${v<=20?"buena":v<=40?"aceptable":v<=60?"moderada":"mala"}.`;
-    }
-    speakText(`Estado en ${loc?.municipio||"tu ubicación"}: ${conds.join(", ")}. Temperatura ${temp} grados, sensación ${feels}. Máxima ${tmax}, mínima ${tmin}. Probabilidad de lluvia: ${rainPct}%.${rain?" Lluvias esperadas a las "+rain.hour+" horas.":""}${aqTxt}`,1.05);
-  };
-
-  if(!wx?.current) return <div style={{padding:"6px 10px",border:`1px solid ${ac}22`,borderRadius:"6px",background:"rgba(0,0,0,0.6)",backdropFilter:"blur(4px)",fontSize:"7px",color:"#333"}}>📡...</div>;
+  if(!wx?.current) return <div style={{padding:"6px 10px",border:`1px solid ${ac}22`,borderRadius:"6px",background:"rgba(0,0,0,0.6)",fontSize:"7px"}}>📡...</div>;
   
   const c=wx.current;
   const temp=Math.round(c.temperature_2m);
-  const feels=Math.round(c.apparent_temperature);
   const icon=getWeatherIcon(c.weather_code, new Date().getHours());
   const tc=temp<=0?"#00ccff":temp<=15?"#44aaff":temp<=25?"#44ffaa":temp<=33?"#ffaa00":"#ff4400";
-  const fill=Math.max(5,Math.min(100,((temp+5)/40)*100));
 
   return(
-    <div onClick={handleClick} title="Toca para escuchar el clima detallado" style={{display:"flex",alignItems:"center",gap:"8px",padding:"6px 12px",border:`1px solid ${ac}33`,borderRadius:"8px",background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",cursor:"pointer",boxShadow:`0 0 15px ${ac}15`,transition:"all 0.2s"}} onMouseEnter={e=>{e.currentTarget.style.boxShadow=`0 0 25px ${ac}40`;e.currentTarget.style.border=`1px solid ${ac}77`;}} onMouseLeave={e=>{e.currentTarget.style.boxShadow=`0 0 15px ${ac}15`;e.currentTarget.style.border=`1px solid ${ac}33`;}}>
-      <svg width="12" height="40" viewBox="0 0 12 40">
-        <rect x="4" y="2" width="4" height="24" rx="2" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5"/>
-        <rect x="4.5" y={2+24*(1-fill/100)} width="3" height={24*fill/100} rx="1.5" fill={tc} style={{filter:`drop-shadow(0 0 3px ${tc})`}}/>
-        <circle cx="6" cy="32" r="5" fill={tc} style={{filter:`drop-shadow(0 0 4px ${tc})`}}/>
-      </svg>
-      <div>
-        <div style={{display:"flex",alignItems:"baseline",gap:"3px"}}>
-          <span style={{fontSize:"18px",lineHeight:1}}>{icon}</span>
-          <span style={{fontSize:"18px",fontWeight:"900",color:tc,lineHeight:1,textShadow:`0 0 8px ${tc}`}}>{temp}°</span>
-          <span style={{fontSize:"6px",color:"rgba(255,255,255,0.25)"}}>/{feels}°</span>
-        </div>
-        {rain && <div style={{fontSize:"6px",color:"#4488ff",animation:"blink 2s steps(1) infinite"}}>🌧 ~{rain.hour}h ({rain.prob}%)</div>}
-        {!rain && <div style={{fontSize:"6px",color:"rgba(255,255,255,0.15)"}}>🔊 toca</div>}
-      </div>
+    <div onClick={()=>speakText(`Temperatura ${temp} grados. ${icon}`)} style={{display:"flex",alignItems:"center",gap:"8px",padding:"6px 12px",border:`1px solid ${ac}33`,borderRadius:"8px",background:"rgba(0,0,0,0.7)",cursor:"pointer"}}>
+      <span style={{fontSize:"18px"}}>{icon}</span>
+      <span style={{fontSize:"18px",fontWeight:"900",color:tc}}>{temp}°</span>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// CLOCK — Icono según hora del día
+// CLOCK
 // ═══════════════════════════════════════════════════════════════════
-function Clock({ac,loc}){
+function Clock({ac}){
   const[t,setT]=useState(new Date());
   useEffect(()=>{
     const iv=setInterval(()=>setT(new Date()),1000);
@@ -557,29 +522,24 @@ function Clock({ac,loc}){
   const blink=t.getSeconds()%2===0;
   const timeIcon=getTimeIcon();
   
-  const days=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-  const months=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-
   return(
-    <div onClick={()=>speakText(`La hora en ${loc?.municipio||"tu ubicación"} es: ${t.getHours()} horas con ${t.getMinutes()} minutos. Hoy es ${days[t.getDay()]} ${t.getDate()} de ${months[t.getMonth()]} de 2026.`,1.05)} title="Toca para escuchar la hora" style={{display:"flex",alignItems:"center",gap:"6px",padding:"6px 14px",border:`1px solid ${ac}33`,borderRadius:"8px",background:"rgba(0,0,0,0.7)",backdropFilter:"blur(8px)",cursor:"pointer",boxShadow:`0 0 15px ${ac}15`,transition:"all 0.2s"}} onMouseEnter={e=>{e.currentTarget.style.boxShadow=`0 0 25px ${ac}40`;e.currentTarget.style.border=`1px solid ${ac}77`;}} onMouseLeave={e=>{e.currentTarget.style.boxShadow=`0 0 15px ${ac}15`;e.currentTarget.style.border=`1px solid ${ac}33`;}}>
+    <div onClick={()=>speakText(`La hora es ${t.getHours()} horas con ${t.getMinutes()} minutos.`)} style={{display:"flex",alignItems:"center",gap:"6px",padding:"6px 14px",border:`1px solid ${ac}33`,borderRadius:"8px",background:"rgba(0,0,0,0.7)",cursor:"pointer"}}>
       <span style={{fontSize:"20px"}}>{timeIcon}</span>
       <div style={{fontFamily:"'Courier New',monospace",display:"flex",alignItems:"baseline",gap:"1px"}}>
-        <span style={{fontSize:"26px",fontWeight:"900",color:ac,textShadow:`0 0 20px ${ac},0 0 40px ${ac}44`,lineHeight:1}}>{hh}</span>
-        <span style={{fontSize:"22px",fontWeight:"900",color:ac,opacity:blink?1:0.1,transition:"opacity 0.1s",lineHeight:1}}>:</span>
-        <span style={{fontSize:"26px",fontWeight:"900",color:ac,textShadow:`0 0 20px ${ac},0 0 40px ${ac}44`,lineHeight:1}}>{mm}</span>
-        <span style={{fontSize:"13px",color:ac,opacity:blink?0.8:0.1,transition:"opacity 0.1s",marginLeft:"1px",lineHeight:1}}>:</span>
-        <span style={{fontSize:"13px",color:`${ac}55`,lineHeight:1}}>{ss}</span>
+        <span style={{fontSize:"26px",fontWeight:"900",color:ac}}>{hh}</span>
+        <span style={{fontSize:"22px",fontWeight:"900",color:ac,opacity:blink?1:0.1}}>:</span>
+        <span style={{fontSize:"26px",fontWeight:"900",color:ac}}>{mm}</span>
+        <span style={{fontSize:"13px",color:ac,opacity:blink?0.8:0.1}}>:</span>
+        <span style={{fontSize:"13px",color:`${ac}55`}}>{ss}</span>
       </div>
-      <div style={{fontSize:"6px",color:`${ac}33`,letterSpacing:"1px"}}>🔊</div>
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// INTERACTIVE PANELS — Iconos dinámicos
+// WAR PANEL
 // ═══════════════════════════════════════════════════════════════════
-
-function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
+function WarPanel({ carriers, cpos, attacks, planes, quakes }) {
   const [tab, setTab] = useState("timeline");
   const dayNum = 21;
   const dayIcon = getDayIcon(dayNum);
@@ -630,15 +590,16 @@ function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// DISEASE PANEL
+// ═══════════════════════════════════════════════════════════════════
 function DiseasePanel({ quakes }) {
   const [tab, setTab] = useState("outbreak");
-  const [age, setAge] = useState("");
-  const [vacc, setVaccResult] = useState(null);
   
   const outbreaks = [
     {name:"SARAMPIÓN 🇲🇽",casos:"9,074",trend:"+12%/sem",risk:"ALTO",c:"#ff2200",mx:true,icon:getDiseaseIcon("9074","+12%")},
     {name:"MPOX CLADE Ib",casos:"100K+",trend:"+8%/sem",risk:"ALTO",c:"#ff6600",mx:false,icon:getDiseaseIcon("100000","+8%")},
-    {name:"H5N1 BOVINOS",casos:"47 estados",trend:"PANDÉMICO",risk:"MÁX.",c:"#ffaa00",mx:false,icon:"🦠🔴"},
+    {name:"H5N1 BOVINOS",casos:"47 estados",trend:"PANDÉMICO",risk:"MÁX.",c:"#ffaa00",mx:false,icon:"🦠"},
   ];
 
   return (
@@ -664,6 +625,9 @@ function DiseasePanel({ quakes }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// CLIMATE PANEL
+// ═══════════════════════════════════════════════════════════════════
 function ClimatePanel({ quakes, hurricanes, hurPos, eonet }) {
   const [tab, setTab] = useState("quakes");
   const maxMag = quakes.length ? Math.max(...quakes.map(q=>q.mag)) : 7;
@@ -725,6 +689,9 @@ function ClimatePanel({ quakes, hurricanes, hurPos, eonet }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// NEWS PANEL
+// ═══════════════════════════════════════════════════════════════════
 function NewsPanel({ fx, crypto, quakes }) {
   const [tab, setTab] = useState("markets");
   const timeIcon = getTimeIcon();
@@ -771,10 +738,8 @@ export default function App(){
   const[proj,setProj]=useState(null);
   const[sel,setSel]=useState(null);
   const[ping,setPing]=useState(null);
-  const[quakes,setQuakes]=useState([]);
-  const[hurricanes,setHurricanes]=useState([]);
-  const[noaaChecked,setNoaaChecked]=useState(false);
-  const[hurPos,setHurPos]=useState({});
+  const quakesData=useQuakes();
+  const[hurricanes,hurPos]=useHurricanes();
   const[wlive,setWlive]=useState({});
   const[radarAngle,setRadarAngle]=useState(0);
   const[showInfo,setShowInfo]=useState(false);
@@ -825,62 +790,9 @@ export default function App(){
     return()=>{done=true;};
   },[]);
 
-  // USGS Earthquakes
-  const fetchQ=useCallback(async()=>{
-    try{
-      const r=await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/5.0_day.geojson");
-      const d=await r.json();
-      const now=Date.now();
-      setQuakes(d.features.filter(f=>f.properties.mag>=5.5&&(now-f.properties.time)<48*3600*1000).map(f=>({
-        id:f.id,
-        mag:f.properties.mag,
-        place:f.properties.place||"Océano",
-        lat:f.geometry.coordinates[1],
-        lng:f.geometry.coordinates[0],
-        depth:Math.round(f.geometry.coordinates[2]),
-        time:f.properties.time,
-        icon:getQuakeIcon(f.properties.mag)
-      })));
-    }catch(e){}
-  },[]);
-
   useEffect(()=>{
-    fetchQ();
-    const iv=setInterval(fetchQ,5*60*1000);
-    return()=>clearInterval(iv);
-  },[fetchQ]);
-
-  // NOAA Hurricanes
-  const fetchH=useCallback(async()=>{
-    try{
-      const r=await fetch("https://www.nhc.noaa.gov/CurrentStorms.json");
-      const d=await r.json();
-      setNoaaChecked(true);
-      if(d.activeStorms?.length){
-        const a=d.activeStorms.map(s=>({
-          id:s.id,
-          name:s.name||"Storm",
-          kts:parseInt(s.intensity)||65,
-          lat:parseFloat(s.latitudeNumeric)||20,
-          lng:parseFloat(s.longitudeNumeric)||-85,
-          dir:parseInt(s.movementDir)||315,
-          spd:parseInt(s.movementSpeed)||12,
-          icon:getHurricaneIcon(parseInt(s.intensity)||65)
-        }));
-        setHurricanes(a);
-        setHurPos(Object.fromEntries(a.map(h=>[h.id,{lat:h.lat,lng:h.lng}])));
-      }else setHurricanes([]);
-    }catch(e){
-      setNoaaChecked(true);
-      setHurricanes([]);
-    }
-  },[]);
-
-  useEffect(()=>{
-    fetchH();
-    const iv=setInterval(fetchH,30*60*1000);
-    return()=>clearInterval(iv);
-  },[fetchH]);
+    setGeo(prev=>prev);
+  },[quakesData]);
 
   // Live weather spots
   useEffect(()=>{
@@ -902,7 +814,7 @@ export default function App(){
   },[]);
 
   useEffect(()=>{
-    window.speechSynthesis.getVoices();
+    window.speechSynthesis?.getVoices();
     return()=>stopSpeech();
   },[]);
 
@@ -923,7 +835,7 @@ export default function App(){
   // Build points with dynamic icons
   const clmPts=[
     ...BASE_CLIMATE,
-    ...quakes.map(q=>({
+    ...quakesData.map(q=>({
       id:`q_${q.id}`,
       name:`M${q.mag.toFixed(1)}\n${q.place.split(",")[0].substring(0,12).toUpperCase()}`,
       lat:q.lat,
@@ -970,6 +882,13 @@ export default function App(){
   const DATA_MAP={war:BASE_WAR,disease:BASE_DISEASE,climate:clmPts,news:BASE_NEWS};
   const pts=DATA_MAP[mode]||[];
 
+  const STATS={
+    war:[{l:"MUERTOS",v:"1,480+",c:"#ff1a1a"},{l:"SOLDADOS USA",v:"13 ✝",c:"#ff4444"},{l:"BRENT",v:"$115",c:"#ffaa00"},{l:"USD/MXN",v:fx?`$${fx}`:"...",c:"#88cc00"}],
+    disease:[{l:"SARAMPIÓN MX",v:"9,074",c:"#ff2200"},{l:"MPOX",v:"100K+",c:"#ff6600"},{l:"H5N1",v:"47 EST",c:"#ffaa00"},{l:"NIPAH",v:"5 CASOS",c:"#cc0000"}],
+    climate:[{l:"HURACANES",v:hurricanes.length,c:"#8844ff"},{l:"SISMOS",v:quakesData.length,c:"#ffaa00"},{l:"INDIA",v:wlive.india?`${wlive.india.temperature_2m}°C`:"51°C",c:"#ff2200"},{l:"TORNADOS",v:"23",c:"#aa44ff"}],
+    news:[{l:"BRENT",v:"$115",c:"#ffaa00"},{l:"BTC",v:crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"...",c:"#ffdd00"},{l:"USD/MXN",v:fx?`$${fx}`:"...",c:"#88cc00"},{l:"NASDAQ",v:"-3%",c:"#ff3344"}],
+  };
+
   return(
     <div style={{background:bg,minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",padding:"10px 8px 16px",fontFamily:"'Courier New',monospace",color:"#fff",transition:"background 0.6s",userSelect:"none",position:"relative",overflow:"hidden"}}>
       {/* BACKGROUND GRID */}
@@ -990,7 +909,7 @@ export default function App(){
           </div>
         </div>
         <div style={{display:"flex",gap:"8px",alignItems:"flex-start",flexWrap:"wrap"}}>
-          <Clock ac={ac} loc={loc}/>
+          <Clock ac={ac}/>
           <WeatherWidget ac={ac} loc={loc}/>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:"5px",alignItems:"flex-end"}}>
@@ -1006,7 +925,7 @@ export default function App(){
       </div>
 
       {/* MAP */}
-      <div style={{width:"100%",maxWidth:"980px",position:"relative",border:`1px solid ${ac}18`,borderRadius:"10px",overflow:"hidden",boxShadow:`0 0 60px ${ac}15,inset 0 0 30px rgba(0,0,0,0.5)`,background:"#010610",zIndex:1}}>
+      <div style={{width:"100%",maxWidth:"980px",position:"relative",border:`1px solid ${ac}18`,borderRadius:"10px",overflow:"hidden",boxShadow:`0 0 60px ${ac}15`,background:"#010610",zIndex:1}}>
         {!geo&&<div style={{height:"440px",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:"12px"}}>
           <div style={{fontSize:"24px",animation:"spin 1.5s linear infinite"}}>🌍</div>
           <div style={{fontSize:"8px",color:ac,letterSpacing:"4px",animation:"blink 1s steps(1) infinite"}}>CARGANDO MAPA GLOBAL...</div>
@@ -1019,17 +938,30 @@ export default function App(){
           {geo.sphere&&<path d={geo.sphere} fill="#010c1a" stroke={ac} strokeWidth="0.4" strokeOpacity="0.12"/>}
           {geo.paths.map(({id,d})=>{
             const col=isoM[id],hasCE=!!mcd[id];
-            return<path key={id} d={d} fill={col?`${col}1e`:"#0a0e1a"} stroke={col?col:"#0c1428"} strokeWidth={col?0.6:0.15} strokeOpacity={col?0.5:1} onMouseEnter={()=>{}} style={{cursor:hasCE?"pointer":"default",transition:"fill 0.2s"}} onMouseOver={e=>{if(col)e.target.setAttribute("fill",col+(hasCE?"55":"2a"));}} onMouseOut={e=>e.target.setAttribute("fill",col?`${col}1e`:"#0a0e1a")} onClick={()=>{}}/>;
+            return<path key={id} d={d} fill={col?`${col}1e`:"#0a0e1a"} stroke={col?col:"#0c1428"} strokeWidth={col?0.6:0.15} strokeOpacity={col?0.5:1} style={{cursor:hasCE?"pointer":"default",transition:"fill 0.2s"}} onMouseOver={e=>{if(col)e.target.setAttribute("fill",col+(hasCE?"55":"2a"));}} onMouseOut={e=>e.target.setAttribute("fill",col?`${col}1e`:"#0a0e1a")} onClick={()=>hasCE&&setSel({id:`cc_${mode}_${id}`,name:mcd[id].name,c:mcd[id].c,det:mcd[id].det})}/>;
           })}
           {geo.borders&&<path d={geo.borders} fill="none" stroke="#0c1428" strokeWidth="0.2"/>}
           
-          {/* DATA POINTS with dynamic icons */}
+          {/* RADAR */}
+          {mode==="war"&&(()=>{
+            const center=xy(26.6,50);
+            if(!center) return null;
+            const[cx,cy]=center,r=115,rad1=radarAngle*Math.PI/180,rad2=(radarAngle-35)*Math.PI/180;
+            return(<g style={{pointerEvents:"none"}}>
+              <circle cx={cx} cy={cy} r={r} fill={`${ac}06`}/>
+              {[0.25,0.5,0.75,1].map(f=><circle key={f} cx={cx} cy={cy} r={r*f} fill="none" stroke={ac} strokeWidth="0.4" opacity="0.15"/>)}
+              <path d={`M${cx},${cy} L${cx+Math.cos(rad1)*r},${cy+Math.sin(rad1)*r} A${r},${r} 0 0,0 ${cx+Math.cos(rad2)*r},${cy+Math.sin(rad2)*r} Z`} fill={ac} opacity="0.12"/>
+              <line x1={cx} y1={cy} x2={cx+Math.cos(rad1)*r} y2={cy+Math.sin(rad1)*r} stroke={ac} strokeWidth="1.4" opacity="0.6" style={{filter:`drop-shadow(0 0 3px ${ac})`}}/>
+            </g>);
+          })()}
+          
+          {/* DATA POINTS */}
           {pts.filter(pt=>pt.lat&&pt.lng).map(pt=>{
             const p=xy(pt.lat,pt.lng);
             if(!p) return null;
             const[px,py]=p;
             const r=7,ptc=pt.c||"#ff4400";
-            return<g key={pt.id} style={{cursor:"pointer"}}>
+            return<g key={pt.id} onClick={()=>{setSel(pt);speakText(pt.det);}} style={{cursor:"pointer"}}>
               {pt.pulse&&[0,1,2].map(i=>(
                 <circle key={i} cx={px} cy={py} r={r} fill="none" stroke={ptc} strokeWidth="0.7" opacity="0">
                   <animate attributeName="r" from={r} to={r+32} dur={`${2+i*0.6}s`} begin={`${i*0.6}s`} repeatCount="indefinite"/>
@@ -1041,6 +973,42 @@ export default function App(){
               {pt.icon&&<text x={px} y={py+2.5} textAnchor="middle" fontSize="6" style={{pointerEvents:"none"}}>{pt.icon}</text>}
             </g>;
           })}
+          
+          {/* CARRIERS */}
+          {mode==="war"&&CARRIERS.map(cv=>{
+            const pos=cpos[cv.id];
+            if(!pos) return null;
+            const p=xy(pos.lat,pos.lng);
+            if(!p) return null;
+            const[cx,cy]=p,cc=cv.pais==="FRANCE"?"#4466ff":"#4488ff";
+            return<g key={cv.id} onClick={()=>{setSel({id:cv.id,name:`${cv.flag} ${cv.name}`,det:cv.det});speakText(cv.det);}} style={{cursor:"pointer"}} filter="url(#glow)">
+              <rect x={cx-11} y={cy-2} width={22} height={4.5} fill={cc} rx="2.2" opacity="0.9" style={{filter:`drop-shadow(0 0 5px ${cc})`}}/>
+              <text x={cx} y={cy-11} textAnchor="middle" fill={cc} fontSize="5.5" fontFamily="'Courier New',monospace" fontWeight="bold">{cv.flag} {cv.name}</text>
+            </g>;
+          })}
+          
+          {/* PLANES */}
+          {mode==="war"&&planes.map(p=>{
+            const pos=xy(p.lat,p.lng);
+            if(!pos) return null;
+            const[px,py]=pos;
+            return<g key={p.id}>
+              <g transform={`translate(${px},${py}) rotate(${p.hdg||0})`}>
+                <polygon points="0,-4 -2,2 0,1 2,2" fill="#00ff88" opacity="0.85" style={{filter:"drop-shadow(0 0 2px #00ff88)"}}/>
+              </g>
+            </g>;
+          })}
+          
+          {/* ATTACKS */}
+          {attacks.map(atk=>{
+            const fr=xy(atk.from.lat,atk.from.lng),to=xy(atk.to.lat,atk.to.lng);
+            if(!fr||!to) return null;
+            const cx=fr[0]+(to[0]-fr[0])*atk.prog,cy=fr[1]+(to[1]-fr[1])*atk.prog;
+            return<g key={atk.id} filter="url(#glow)">
+              <circle cx={cx} cy={cy} r={2.5} fill={atk.col} opacity="0.95"/>
+            </g>;
+          })}
+          
           <rect width={W} height={H} fill="none" opacity="0.03" style={{backgroundImage:"repeating-linear-gradient(0deg,rgba(0,0,0,0.5),rgba(0,0,0,0.5) 1px,transparent 1px,transparent 4px)",pointerEvents:"none"}}/>
         </svg>}
         <div style={{position:"absolute",bottom:"4px",left:"50%",transform:"translateX(-50%)",fontSize:"6px",color:"rgba(255,255,255,0.08)",letterSpacing:"2px",pointerEvents:"none",whiteSpace:"nowrap"}}>
@@ -1048,12 +1016,34 @@ export default function App(){
         </div>
       </div>
 
+      {/* DETAIL PANEL */}
+      {sel&&<div style={{marginTop:"8px",padding:"14px 16px",background:`${bg}ee`,border:`1px solid ${sel.c||"#ff4400"}`,borderRadius:"8px",width:"100%",maxWidth:"980px",boxShadow:`0 0 40px ${sel.c||"#ff4400"}22`,backdropFilter:"blur(10px)",position:"relative",zIndex:1}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
+            <span style={{fontSize:"14px",fontWeight:"900",letterSpacing:"2px",color:sel.c||"#ff4400"}}>{sel.icon||""} {(sel.name||"").replace(/\n/g," ")}</span>
+            {sel.fecha&&<span style={{fontSize:"7px",background:sel.c||"#ff4400",color:"#000",padding:"2px 8px",borderRadius:"3px"}}>{sel.fecha}</span>}
+          </div>
+          <button onClick={()=>{setSel(null);stopSpeech();}} style={{background:"none",border:"none",color:"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:"16px"}}>✕</button>
+        </div>
+        <div style={{marginTop:"10px",fontSize:"11px",color:"rgba(255,255,255,0.8)",lineHeight:"1.9"}}>{sel.det||""}</div>
+      </div>}
+
+      {/* STATS */}
+      <div style={{marginTop:"10px",display:"flex",gap:"5px",flexWrap:"wrap",justifyContent:"center",width:"100%",maxWidth:"980px",position:"relative",zIndex:1}}>
+        {(STATS[mode]||[]).map((st,i)=>(
+          <button key={st.l} onClick={()=>speakText(`${st.l}: ${st.v}`)} style={{background:`${st.c}0c`,border:`1px solid ${st.c}22`,borderRadius:"6px",padding:"8px 10px",textAlign:"center",minWidth:"90px",cursor:"pointer",fontFamily:"'Courier New',monospace",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${st.c}`;e.currentTarget.style.background=`${st.c}22`;e.currentTarget.style.boxShadow=`0 0 20px ${st.c}44`;}} onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${st.c}22`;e.currentTarget.style.background=`${st.c}0c`;e.currentTarget.style.boxShadow="none";}}>
+            <div style={{fontSize:"13px",fontWeight:"900",color:st.c}}>{st.v}</div>
+            <div style={{fontSize:"6px",color:"rgba(255,255,255,0.2)",letterSpacing:"1.5px",marginTop:"2px"}}>{st.l}</div>
+          </button>
+        ))}
+      </div>
+
       {/* INTERACTIVE PANELS */}
       <div style={{marginTop:"10px",width:"100%",maxWidth:"980px",position:"relative",zIndex:1}}>
-        {mode==="war"&&<WarPanel carriers={CARRIERS} cpos={cpos} attacks={attacks} planes={planes} quakes={quakes} proj={proj}/>}
-        {mode==="disease"&&<DiseasePanel quakes={quakes}/>}
-        {mode==="climate"&&<ClimatePanel quakes={quakes} hurricanes={hurricanes} hurPos={hurPos} eonet={eonet}/>}
-        {mode==="news"&&<NewsPanel fx={fx} crypto={crypto} quakes={quakes}/>}
+        {mode==="war"&&<WarPanel carriers={CARRIERS} cpos={cpos} attacks={attacks} planes={planes} quakes={quakesData}/>}
+        {mode==="disease"&&<DiseasePanel quakes={quakesData}/>}
+        {mode==="climate"&&<ClimatePanel quakes={quakesData} hurricanes={hurricanes} hurPos={hurPos} eonet={eonet}/>}
+        {mode==="news"&&<NewsPanel fx={fx} crypto={crypto} quakes={quakesData}/>}
       </div>
 
       {/* LIVE DATA STRIP */}
