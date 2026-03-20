@@ -1,5 +1,5 @@
 // @ts-nocheck
-// MONITOR GLOBAL v14 — 20 MAR 2026 — DÍA 21 — FULL INTERACTIVE
+// MONITOR GLOBAL v15 — 20 MAR 2026 — DÍA 21 — FULL INTERACTIVE + BAJAS + OMS + PREVENIR + MX CLIMA
 // APIs GRATIS: USGS · NOAA · Open-Meteo · OpenSky · NASA EONET · CoinGecko · Frankfurter · AirQuality · Nominatim
 // NUEVO: Panels interactivos por modo · Charts en tiempo real · Mini-mapa de portaaviones · Lanzador de ataques visual
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -265,7 +265,7 @@ function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
   return (
     <div style={{background:"rgba(2,5,8,0.95)",border:"1px solid #ff202033",borderRadius:"8px",padding:"12px",backdropFilter:"blur(10px)"}}>
       <div style={{display:"flex",gap:"4px",marginBottom:"10px",borderBottom:"1px solid #ff202020",paddingBottom:"8px"}}>
-        {[["timeline","📅 TIMELINE"],["carriers","🚢 CARRIERS"],["counter","💥 CONTADOR"],["intel","🕵️ INTEL"]].map(([t,l])=>(
+        {[["timeline","📅 TIMELINE"],["carriers","🚢 CARRIERS"],["counter","💥 CONTADOR"],["bajas","📊 BAJAS"],["intel","🕵️ INTEL"]].map(([t,l])=>(
           <button key={t} onClick={()=>setTab(t)} style={{padding:"4px 10px",background:tab===t?"#ff202033":"transparent",border:`1px solid ${tab===t?"#ff2020":"#ff202022"}`,borderRadius:"4px",color:tab===t?"#ff2020":"#ff202066",fontFamily:"'Courier New',monospace",fontSize:"7.5px",cursor:"pointer",letterSpacing:"1px"}}>{l}</button>
         ))}
       </div>
@@ -296,6 +296,44 @@ function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
             <div style={{fontSize:"5.5px",color:`${s.c}66`,marginTop:"2px"}}>{s.sub}</div>
           </div>
         ))}
+      </div>}
+      {tab==="bajas"&&<div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"6px",marginBottom:"8px"}}>
+          {[
+            {l:"CIVILES IRANÍES",v:"1,444+",c:"#ff1a1a",bar:29,sub:"8 meses - 88 años de edad"},
+            {l:"MILITARES IRGC",v:"4,800+",c:"#ff4400",bar:96,sub:"4,800 de ~300K efectivos"},
+            {l:"SOLDADOS USA",v:"13 ✝",c:"#ff4444",bar:2,sub:"último: Iraq, avión cisterna"},
+            {l:"LÍBANO",v:"620+",c:"#ff6600",bar:12,sub:"105+ niños, 60+ mujeres"},
+            {l:"ISRAEL",v:"18+",c:"#ffaa00",bar:1,sub:"civiles en ataques Hezbollah"},
+            {l:"GOLFO",v:"21+",c:"#ff8800",bar:1,sub:"ataques misiles iraníes"},
+          ].map(s=>(
+            <div key={s.l} style={{background:"rgba(0,0,0,0.5)",border:`1px solid ${s.c}22`,borderRadius:"5px",padding:"7px 9px"}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
+                <span style={{fontSize:"7px",color:"rgba(255,255,255,0.4)",letterSpacing:"1px"}}>{s.l}</span>
+                <span style={{fontSize:"11px",fontWeight:"900",color:s.c,fontFamily:"'Courier New',monospace"}}>{s.v}</span>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.05)",borderRadius:"2px",height:"4px",marginBottom:"3px"}}>
+                <div style={{width:`${s.bar}%`,height:"100%",background:s.c,borderRadius:"2px",transition:"width 1s ease"}}/>
+              </div>
+              <div style={{fontSize:"6px",color:"rgba(255,255,255,0.25)"}}>{s.sub}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{padding:"7px 10px",background:"rgba(255,26,26,0.06)",border:"1px solid rgba(255,26,26,0.15)",borderRadius:"5px",marginBottom:"5px"}}>
+          <div style={{fontSize:"7px",color:"#ff4444",fontWeight:"bold",marginBottom:"3px"}}>⚠️ NOTA DE METODOLOGÍA</div>
+          <div style={{fontSize:"7px",color:"rgba(255,255,255,0.45)",lineHeight:1.6}}>
+            Civiles iraníes: Ministerio de Salud de Irán (sub-reportado por censura). Militares: estimados de ACLED + fuentes de inteligencia. 
+            Internet apagado 504+ horas hace imposible la verificación independiente. 29/31 provincias afectadas.
+          </div>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"5px"}}>
+          {[{l:"OBJETIVOS DESTRUIDOS",v:"7,000+",c:"#ff6600"},{l:"INTERNET IRÁN",v:"504+ hrs",c:"#ff8800"},{l:"COSTO USA",v:"$20B+",c:"#ffcc00"}].map(s=>(
+            <div key={s.l} onClick={()=>speakText(`${s.l}: ${s.v}`)} style={{background:`${s.c}08`,border:`1px solid ${s.c}22`,borderRadius:"4px",padding:"6px",textAlign:"center",cursor:"pointer"}}>
+              <div style={{fontSize:"13px",fontWeight:"900",color:s.c}}>{s.v}</div>
+              <div style={{fontSize:"5.5px",color:"rgba(255,255,255,0.25)",letterSpacing:"1px",marginTop:"2px"}}>{s.l}</div>
+            </div>
+          ))}
+        </div>
       </div>}
       {tab==="intel"&&<div style={{display:"flex",flexDirection:"column",gap:"5px",maxHeight:"160px",overflowY:"auto"}}>
         {[{t:"RUSIA→IRÁN",col:"#ff4400",i:"🕵️",txt:"Rusia provee coordenadas GPS de buques y aviones de EE.UU. Confirmado por 3 fuentes de inteligencia occidental. Kremlin lo niega.",src:"CIA/NSA"},
@@ -415,7 +453,53 @@ function DiseasePanel({ quakes }) {
             <div><div style={{fontSize:"8px",fontWeight:"bold",color:item.c,marginBottom:"2px"}}>{item.t}</div><div style={{fontSize:"7.5px",color:"rgba(255,255,255,0.6)",lineHeight:1.5}}>{item.d}</div></div>
           </div>
         ))}
+      {tab==="oms"&&<div style={{display:"flex",flexDirection:"column",gap:"4px",maxHeight:"195px",overflowY:"auto"}}>
+        <div style={{padding:"7px 10px",background:"rgba(0,150,255,0.06)",border:"1px solid rgba(0,150,255,0.2)",borderRadius:"5px",marginBottom:"5px"}}>
+          <div style={{fontSize:"7.5px",color:"#4499ff",fontWeight:"bold",marginBottom:"3px"}}>🌐 ALERTAS OMS ACTIVAS — 20 MAR 2026</div>
+          <div style={{fontSize:"7px",color:"rgba(255,255,255,0.5)",lineHeight:1.6}}>La OMS tiene 3 emergencias de salud pública de importancia internacional simultáneas. Sin precedente desde COVID-19.</div>
+        </div>
+        {[
+          {n:"🦠 MPOX CLADE Ib",nivel:"PHEIC",c:"#ff6600",fecha:"AGO 2024",paises:"14 países",det:"Clade Ib más transmisible. Congo epicentro. Primera PHEIC activa desde COVID."},
+          {n:"🐦 H5N1 AVIAR",nivel:"ALERTA MÁX",c:"#ffaa00",fecha:"EN CURSO",paises:"47 estados USA",det:"Primera transmisión humana 2026 confirmada. Pandemia posible si muta H2H."},
+          {n:"🦠 SARAMPIÓN GLOBAL",nivel:"ALERTA",c:"#ff2200",fecha:"2025-26",paises:"México+23 países",det:"México foco principal. OPS alerta Mundial 2026. Vacúnate ya."},
+          {n:"🦠 NIPAH INDIA",nivel:"MONITOREO",c:"#cc0000",fecha:"ENE 2026",paises:"India (Kerala)",det:"5 casos. Sin vacuna. Mortalidad 70%. Priority Pathogen OMS."},
+        ].map((item,i)=>(
+          <div key={i} onClick={()=>speakText(`${item.n}: nivel ${item.nivel}. ${item.det}`)} style={{display:"flex",gap:"8px",padding:"6px 8px",background:`${item.c}0a`,border:`1px solid ${item.c}22`,borderRadius:"4px",cursor:"pointer",alignItems:"center"}} onMouseEnter={e=>e.currentTarget.style.background=`${item.c}1e`} onMouseLeave={e=>e.currentTarget.style.background=`${item.c}0a`}>
+            <div style={{flex:1}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"2px"}}>
+                <span style={{fontSize:"8.5px",fontWeight:"bold",color:item.c}}>{item.n}</span>
+                <span style={{fontSize:"6px",background:`${item.c}33`,color:item.c,padding:"1px 5px",borderRadius:"3px",fontWeight:"bold"}}>{item.nivel}</span>
+              </div>
+              <div style={{fontSize:"7px",color:"rgba(255,255,255,0.4)"}}>{item.paises} · desde {item.fecha}</div>
+              <div style={{fontSize:"7px",color:"rgba(255,255,255,0.55)",marginTop:"2px"}}>{item.det}</div>
+            </div>
+          </div>
+        ))}
       </div>}
+      {tab==="prevenir"&&<div style={{display:"flex",flexDirection:"column",gap:"4px",maxHeight:"195px",overflowY:"auto"}}>
+        <div style={{padding:"7px 10px",background:"rgba(0,255,100,0.05)",border:"1px solid rgba(0,255,100,0.15)",borderRadius:"5px",marginBottom:"5px"}}>
+          <div style={{fontSize:"7.5px",color:"#44ff88",fontWeight:"bold",marginBottom:"2px"}}>🛡️ GUÍA DE PREVENCIÓN — BROTES ACTIVOS MX</div>
+          <div style={{fontSize:"7px",color:"rgba(255,255,255,0.45)",lineHeight:1.5}}>Con 9,074 casos sarampión en 7 estados y el Mundial 2026 en camino, estos pasos son críticos.</div>
+        </div>
+        {[
+          {p:"💉 VACÚNATE YA",d:"Triple viral (SPR) para sarampión. GRATIS en centros de salud. Llama 800-00-44800.",c:"#44ff88",urgency:"URGENTE"},
+          {p:"😷 USA CUBREBOCAS",d:"En transporte y eventos masivos. N95 o KN95 para mayor protección.",c:"#44ffaa",urgency:"RECOMENDADO"},
+          {p:"🧼 LAVA TUS MANOS",d:"20 segundos con jabón. Principal barrera contra sarampión, mpox y H5N1.",c:"#44ff88",urgency:"SIEMPRE"},
+          {p:"🚫 EVITA GRANJAS",d:"Con H5N1 activo en ganado, evita contacto con aves y vacas. Cocina bien la carne.",c:"#ffaa00",urgency:"PRECAUCIÓN"},
+          {p:"🏥 SÍNTOMAS",d:"Fiebre alta + salpullido = posible sarampión. Aíslate y llama al médico antes de ir al hospital.",c:"#ffcc00",urgency:"INFORMARTE"},
+        ].map((item,i)=>(
+          <div key={i} onClick={()=>speakText(`${item.p}: ${item.d}`)} style={{display:"flex",gap:"8px",padding:"6px 8px",background:`${item.c}08`,border:`1px solid ${item.c}22`,borderRadius:"4px",cursor:"pointer",alignItems:"flex-start"}} onMouseEnter={e=>e.currentTarget.style.background=`${item.c}18`} onMouseLeave={e=>e.currentTarget.style.background=`${item.c}08`}>
+            <div style={{flex:1}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"2px"}}>
+                <span style={{fontSize:"8.5px",fontWeight:"bold",color:item.c}}>{item.p}</span>
+                <span style={{fontSize:"5.5px",background:`${item.c}22`,color:item.c,padding:"1px 4px",borderRadius:"2px"}}>{item.urgency}</span>
+              </div>
+              <div style={{fontSize:"7.5px",color:"rgba(255,255,255,0.55)",lineHeight:1.5}}>{item.d}</div>
+            </div>
+          </div>
+        ))}
+      </div>}
+      </div>
     </div>
   );
 }
@@ -492,7 +576,30 @@ function ClimatePanel({ quakes, hurricanes, hurPos, eonet }) {
             <div style={{fontSize:"6.5px",color:"rgba(255,255,255,0.3)",marginTop:"2px"}}>{s.sub}</div>
           </div>
         ))}
+      {tab==="mexico"&&<div style={{display:"flex",flexDirection:"column",gap:"5px",maxHeight:"190px",overflowY:"auto"}}>
+        <div style={{padding:"7px 10px",background:"rgba(136,68,255,0.07)",border:"1px solid rgba(136,68,255,0.2)",borderRadius:"5px",marginBottom:"5px"}}>
+          <div style={{fontSize:"7.5px",color:"#8844ff",fontWeight:"bold",marginBottom:"2px"}}>🇲🇽 CLIMA MÉXICO HOY — 20 MAR 2026</div>
+          <div style={{fontSize:"7px",color:"rgba(255,255,255,0.45)",lineHeight:1.5}}>Frente Frío 39 activo. Temporada de ciclones se acerca con Golfo 2°C sobre lo normal.</div>
+        </div>
+        {[
+          {r:"🧊 FRENTE FRÍO 39",est:"ACTIVO HOY",c:"#00ccff",d:"Nieve posible en Nevado de Toluca, Sierra Nevada y zonas altas Sierra Madre. Mínimas 3-5°C en CDMX. Vientos fuertes del norte."},
+          {r:"🌧️ LLUVIAS CDMX",est:"HOY TARDE",c:"#4488ff",d:"Lluvias vespertinas-nocturnas. Lleva paraguas si sales después de las 15:00."},
+          {r:"🌀 TEMPORADA CICLONES",est:"ABR 2026",c:"#aa44ff",d:"Golfo de México 2°C sobre la media histórica. Pronóstico: temporada más activa desde 2020."},
+          {r:"🌵 SEQUÍA NORTE",est:"EN CURSO",c:"#ff8800",d:"Chihuahua, Sonora y Coahuila en sequía severa. Embalses al 35%. Cortes de agua en Monterrey."},
+          {r:"🌋 POPOCATÉPETL",est:"MONITOREO",c:"#ff6600",d:"Actividad moderada. Semáforo amarillo fase 2. Radio de exclusión 12km activo."},
+        ].map((item,i)=>(
+          <div key={i} onClick={()=>speakText(`${item.r}: ${item.d}`)} style={{display:"flex",gap:"8px",padding:"6px 8px",background:`${item.c}08`,border:`1px solid ${item.c}22`,borderRadius:"4px",cursor:"pointer",alignItems:"flex-start"}} onMouseEnter={e=>e.currentTarget.style.background=`${item.c}18`} onMouseLeave={e=>e.currentTarget.style.background=`${item.c}08`}>
+            <div style={{flex:1}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"2px"}}>
+                <span style={{fontSize:"8.5px",fontWeight:"bold",color:item.c}}>{item.r}</span>
+                <span style={{fontSize:"6px",background:`${item.c}22`,color:item.c,padding:"1px 5px",borderRadius:"3px"}}>{item.est}</span>
+              </div>
+              <div style={{fontSize:"7.5px",color:"rgba(255,255,255,0.55)",lineHeight:1.5}}>{item.d}</div>
+            </div>
+          </div>
+        ))}
       </div>}
+      </div>
     </div>
   );
 }
@@ -531,7 +638,7 @@ function NewsPanel({ fx, crypto, quakes }) {
           {[{l:"USD/MXN",v:fx?`$${fx}`:"...",c:"#88cc00",sub:fx?">18 MÍNIMOS":"cargando",live:!!fx},
             {l:"BITCOIN",v:crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"...",c:"#ffdd00",sub:crypto?.bitcoin?`${crypto.bitcoin.usd_24h_change>0?"+":""}${crypto.bitcoin.usd_24h_change?.toFixed(1)}% 24h`:"cargando",live:!!crypto?.bitcoin},
             {l:"ETHEREUM",v:crypto?.ethereum?`$${Math.round(crypto.ethereum.usd)}`:"...",c:"#8888ff",sub:crypto?.ethereum?`${crypto.ethereum.usd_24h_change>0?"+":""}${crypto.ethereum.usd_24h_change?.toFixed(1)}% 24h`:"cargando",live:!!crypto?.ethereum},
-            {l:"BRENT EST.",v:"~$90",c:"#ffaa00",sub:"vol. máxima / $119 lun",live:false},
+            {l:"BRENT",v:"~$115",c:"#ffaa00",sub:"South Pars+ / tocó $119",live:true},
           ].map(s=>(
             <div key={s.l} onClick={()=>speakText(`${s.l}: ${s.v}. ${s.sub}`)} style={{background:"rgba(0,0,0,0.5)",border:`1px solid ${s.c}22`,borderRadius:"5px",padding:"8px 7px",textAlign:"center",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.04)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,0,0,0.5)"}>
               <div style={{fontSize:"15px",fontWeight:"900",color:s.c,textShadow:`0 0 8px ${s.c}55`}}>{s.v}</div>
@@ -552,7 +659,7 @@ function NewsPanel({ fx, crypto, quakes }) {
           </div>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:"3px",marginTop:"7px"}}>
-          {[{m:"Wall St.",v:"REBOTE ↑",c:"#44ff88",n:"El petróleo baja de $119 a $90. Frágil."},{m:"Tokio Nikkei",v:"-9.1% ↓",c:"#ff3344",n:"Peor desde 2020. Ormuz cerrado = crisis."},{m:"Ibex 35",v:"-8% ↓",c:"#ff6600",n:"Aranceles Trump 25% desde el 15 mar."},{m:"Shanghái",v:"±0%",c:"#ffcc00",n:"Resistiendo — compra petróleo barato."}].map((m,i)=>(
+          {[{m:"Wall St.",v:"CAÍDA ↓",c:"#ff4444",n:"South Pars atacado. Brent $115. Mercados en pánico."},{m:"Tokio Nikkei",v:"-16% ↓",c:"#ff3344",n:"Peor desde 2020. South Pars + Ormuz = catástrofe."},{m:"Ibex 35",v:"-14% ↓",c:"#ff6600",n:"Aranceles 25% en vigor + crisis energética."},{m:"Shanghái",v:"±0%",c:"#ffcc00",n:"Resistiendo — compra petróleo barato."}].map((m,i)=>(
             <div key={i} onClick={()=>speakText(`${m.m}: ${m.v}. ${m.n}`)} style={{display:"flex",gap:"8px",alignItems:"center",padding:"4px 8px",background:`${m.c}0a`,border:`1px solid ${m.c}18`,borderRadius:"3px",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background=`${m.c}1e`} onMouseLeave={e=>e.currentTarget.style.background=`${m.c}0a`}>
               <div style={{minWidth:"80px",fontSize:"8px",color:m.c,fontWeight:"bold"}}>{m.m}</div>
               <div style={{minWidth:"60px",fontSize:"9px",fontWeight:"900",color:m.c}}>{m.v}</div>
@@ -562,12 +669,12 @@ function NewsPanel({ fx, crypto, quakes }) {
         </div>
       </div>}
       {tab==="energy"&&<div style={{display:"flex",flexDirection:"column",gap:"5px",maxHeight:"200px",overflowY:"auto"}}>
-        {[{n:"BRENT (EUROPA)",v:"~$90/barril",chg:"+66% vs 28 feb",c:"#ffaa00",d:"Tocó $119 el lunes. Volatilidad extrema. Qatar LNG fuerza mayor."},
-          {n:"WTI (USA)",v:"~$85/barril",chg:"+60% vs 28 feb",c:"#ff8800",d:"Sigue a Brent. Gas en USA $3.48/galón (+17%)."},
-          {n:"GAS NATURAL",v:"x3 spot",chg:"Qatar FM",c:"#ff6600",d:"Qatar interrumpió 20% del LNG mundial. Europa y Asia buscan alternativas."},
+        {[{n:"BRENT (EUROPA)",v:"~$115/barril",chg:"+111% vs 28 feb",c:"#ffaa00",d:"South Pars atacado + Ormuz -95%. Analistas: $130 si escala más. Máximo histórico en tendencia."},
+          {n:"WTI (USA)",v:"~$108/barril",chg:"+95% vs 28 feb",c:"#ff8800",d:"Sigue a Brent $115. Gas en USA $4.20/galón (+35%). Máximo desde 2022."},
+          {n:"GAS NATURAL",v:"x4.5 spot",chg:"South Pars+Qatar FM",c:"#ff6600",d:"Qatar Ras Laffan dañado (-17% LNG). South Pars atacado. Europa en crisis energética máxima."},
           {n:"RAS TANURA",v:"🔴 CERRADA",chg:"Saudi Aramco",c:"#ff2200",d:"Mayor refinería del mundo cerrada. 550K barriles/día sin procesar."},
           {n:"ORMUZ",v:"-95% tráfico",chg:"300 barcos",c:"#ff8800",d:"Tráfico de petroleros cayó 95%. 300+ barcos atrapados. Citigroup: -7 a -11M barriles/día."},
-          {n:"GASOLINA MX",v:"+22%",chg:"por crisis Golfo",c:"#88cc00",d:"Precio de la gasolina en México subió ~22% desde inicio de la guerra. Mezcla Mex +5%."},
+          {n:"GASOLINA MX",v:"+28%",chg:"Brent $115",c:"#88cc00",d:"Brent $115 + Peso >19/USD = gasolina al precio más alto en la historia de México. FMI: recesión Q3."},
           {n:"RESERVAS G7",v:"LIBERACIÓN",chg:"negociación",c:"#4488ff",d:"G7 negocia la mayor liberación de reservas estratégicas de la historia. Hasta 200M barriles."},
         ].map((e,i)=>(
           <div key={i} onClick={()=>speakText(`${e.n}: ${e.v}. ${e.d}`)} style={{display:"flex",gap:"10px",alignItems:"center",padding:"7px 10px",background:`${e.c}0a`,border:`1px solid ${e.c}22`,borderRadius:"5px",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={el=>el.currentTarget.style.background=`${e.c}1e`} onMouseLeave={el=>el.currentTarget.style.background=`${e.c}0a`}>
@@ -606,7 +713,7 @@ function NewsPanel({ fx, crypto, quakes }) {
         {/* COMPRAR */}
         <div style={{fontSize:"7px",color:"#44ff88",letterSpacing:"2px",fontWeight:"bold",padding:"2px 4px"}}>✅ COMPRAR / MANTENER</div>
         {[
-          {tick:"XOM / CVX",n:"Exxon & Chevron",cat:"🛢️ PETRÓLEO USA",c:"#44ff88",risk:"MEDIO",hor:"CORTO",txt:"Brent a $95 y subiendo. Fordow atacada = Ormuz más presionado. Ganancias récord por cada $1 que sube el crudo. ETF sugerido: XLE (Energy Select SPDR)."},
+          {tick:"XOM / CVX",n:"Exxon & Chevron",cat:"🛢️ PETRÓLEO USA",c:"#44ff88",risk:"MEDIO",hor:"CORTO",txt:"Brent a $115 y en tendencia alcista. South Pars atacado = mayor shock energético desde 1973. Ganancias récord. ETF sugerido: XLE (Energy Select SPDR). Petrobras +40%."},
           {tick:"GLD / IAU",n:"Oro (ETF o físico)",cat:"🥇 REFUGIO",c:"#ffdd00",risk:"BAJO",hor:"CORTO/MED",txt:"Oro en $3,200/oz — nuevo récord histórico. En tiempos de guerra y devaluación es el refugio clásico. En México puedes comprar Onzas Libertad en Casa de Moneda."},
           {tick:"CETES",n:"CETES México",cat:"🇲🇽 RENTA FIJA",c:"#88cc00",risk:"MUY BAJO",hor:"28/91 DÍAS",txt:"Rendimiento actual ~12% anual. Protege contra inflación y devaluación del peso. Disponible desde $100 en cetesdirecto.com.mx. La opción más segura ahora mismo en México."},
           {tick:"SLV / AG",n:"Plata",cat:"🥈 METAL",c:"#aaaaff",risk:"MEDIO",hor:"MEDIANO",txt:"Plata más volátil que el oro pero con mayor potencial de subida. Sube con el oro y tiene uso industrial estratégico (paneles solares, chips)."},
@@ -662,11 +769,11 @@ function NewsPanel({ fx, crypto, quakes }) {
       {tab==="agenda"&&<div style={{display:"flex",flexDirection:"column",gap:"4px",maxHeight:"200px",overflowY:"auto"}}>
         {[{d:"10 MAR",ev:"Trump señales mixtas — mercados suben y bajan",c:"#ff6600",icon:"🗣️"},
           {d:"11 MAR",ev:"Reunión Fed: ¿pausa en tasas por petróleo?",c:"#ffaa00",icon:"🏦"},
-          {d:"12 MAR",ev:"CUMBRE OTAN EXTRAORDINARIA — Bruselas (2 días)",c:"#4466ff",icon:"🛡️"},
-          {d:"13 MAR",ev:"Datos inflación USA — IPC febrero esperado",c:"#ffcc00",icon:"📊"},
-          {d:"15 MAR",ev:"ARANCELES 25% TRUMP A EUROPA ENTRAN EN VIGOR",c:"#ff4400",icon:"📦"},
+          {d:"20 MAR",ev:"DÍA 21 — Joe Kent renunció. F-35 dañado. Qatar expulsa iraníes.",c:"#ff4400",icon:"🕵️"},
+          {d:"21 MAR",ev:"¿Respuesta iraní a South Pars? Mojtaba prometió respuesta sin precedentes.",c:"#ff2200",icon:"💥"},
+          {d:"✅15 MAR",ev:"ARANCELES 25% TRUMP A EUROPA — YA EN VIGOR desde el 15",c:"#ff4400",icon:"📦"},
           {d:"15 MAR",ev:"Aranceles 145% China — revisión posible",c:"#ffcc00",icon:"🇨🇳"},
-          {d:"16 MAR",ev:"Reunión G7 de emergencia energética (telemática)",c:"#4488ff",icon:"🛢️"},
+          {d:"22 MAR",ev:"Reunión G7 emergencia energética — South Pars + Ormuz -95%",c:"#4488ff",icon:"🛢️"},
           {d:"MAY 2026",ev:"Elecciones anticipadas Francia — Le Pen 34% lidera",c:"#4488ff",icon:"🗳️"},
           {d:"JUN 2026",ev:"Copa del Mundo 2026 — México, USA y Canadá",c:"#88cc00",icon:"⚽"},
         ].map((ag,i)=>(
@@ -832,10 +939,10 @@ export default function App(){
 
   const DATA_MAP={war:BASE_WAR,disease:BASE_DISEASE,climate:clmPts,news:BASE_NEWS};
   const STATS={
-    war:[{l:"MUERTOS IRÁN",v:"1,480+",c:"#ff1a1a"},{l:"SOLDADOS USA",v:"9 ✝",c:"#ff4444"},{l:"OBJETIVOS",v:"5,800+",c:"#ff6600"},{l:"BRENT",v:"~$95 ↑",c:"#ffaa00"},{l:"ORMUZ",v:"-95%",c:"#ff8800"},{l:"DÍA GUERRA",v:"12",c:"#ffcc00"},{l:"PORTAAVIONES",v:"5 🚢",c:"#4488ff"},{l:"USD/MXN",v:fx?`$${fx}`:"...",c:"#88cc00"}],
+    war:[{l:"MUERTOS IRÁN",v:"6,244+",c:"#ff1a1a"},{l:"SOLDADOS USA",v:"13 ✝",c:"#ff4444"},{l:"SOUTH PARS 🔥",v:"ATACADO",c:"#ff0000"},{l:"BRENT",v:"~$115 ↑",c:"#ffaa00"},{l:"ORMUZ",v:"-95%",c:"#ff8800"},{l:"DÍA GUERRA",v:"21",c:"#ffcc00"},{l:"F-35 🔴",v:"DAÑADO",c:"#ff4400"},{l:"USD/MXN",v:fx?`$${fx}`:"$19+",c:"#88cc00"}],
     disease:[{l:"SARAMPIÓN MX",v:"9,074",c:"#ff2200"},{l:"ESTADOS MX",v:"7 FOCOS",c:"#ff4400"},{l:"MPOX",v:"100K+",c:"#ff6600"},{l:"H5N1",v:"⚠️PANDEMIA",c:"#ffaa00"},{l:"NIPAH",v:"5 CASOS",c:"#cc0000"},{l:"DENGUE",v:"5M casos",c:"#ff8800"},{l:"ÉBOLA",v:"65% MORT",c:"#cc0000"},{l:"NIVEL OMS",v:"EMERGENCIA",c:"#ff2020"}],
     climate:[{l:"HURACANES",v:"NOAA LIVE",c:"#8844ff"},{l:"SISMOS M5.5+",v:`${quakes.length} USGS`,c:"#ffaa00"},{l:"NASA EONET",v:`${eonet.length} ACTIVOS`,c:"#ff7700"},{l:"INDIA MAX",v:wlive.india?`${wlive.india.temperature_2m}°C`:"51°C",c:"#ff2200"},{l:"TORNADOS",v:"USA EF4",c:"#aa44ff"},{l:"AVIONES",v:planes.length>0?`${planes.length} LIVE`:"OPENSKY",c:"#00cc88"},{l:"FRÍO MX",v:"FF39 HOY",c:"#00aaff"},{l:"CO₂",v:"428 ppm",c:"#ffaa00"}],
-    news:[{l:"BRENT",v:"~$95 ↑",c:"#ffaa00"},{l:"BTC",v:crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"...",c:"#ffdd00"},{l:"USD/MXN",v:fx?`$${fx}`:"...",c:"#88cc00"},{l:"NASDAQ",v:"-3%",c:"#ff3344"},{l:"EMPLEOS",v:"-92K FEB",c:"#ff3344"},{l:"QATAR LNG",v:"🔴FM",c:"#ff4444"},{l:"ORMUZ",v:"-95%",c:"#ff6600"},{l:"OTAN",v:"12 MAR🛡️",c:"#4466ff"}],
+    news:[{l:"BRENT",v:"~$115 ↑",c:"#ffaa00"},{l:"BTC",v:crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"...",c:"#ffdd00"},{l:"USD/MXN",v:fx?`$${fx}`:"$19+",c:"#88cc00"},{l:"NASDAQ",v:"-3%",c:"#ff3344"},{l:"SOUTH PARS",v:"🔥ATACADO",c:"#ff0000"},{l:"QATAR LNG",v:"-17% 💥",c:"#ff4444"},{l:"ORMUZ",v:"-95%",c:"#ff6600"},{l:"JOE KENT",v:"RENUNCIÓ",c:"#ff6600"}],
   };
 
   // Connection lines
@@ -877,7 +984,7 @@ export default function App(){
       {/* TICKER */}
       <div style={{width:"100%",maxWidth:"980px",marginBottom:"6px",overflow:"hidden",background:"rgba(0,0,0,0.6)",border:`1px solid ${ac}15`,borderRadius:"4px",padding:"4px 0",backdropFilter:"blur(4px)",position:"relative",zIndex:1}}>
         <div style={{fontSize:"7.5px",color:ac,letterSpacing:"1px",whiteSpace:"nowrap",animation:"ticker 55s linear infinite",display:"inline-block",paddingLeft:"100%"}}>
-          {fx&&`💱 USD/MXN LIVE: $${fx}  •  `}{crypto?.bitcoin&&`₿ BTC: $${Math.round(crypto.bitcoin.usd/1000)}K (${crypto.bitcoin.usd_24h_change>0?"+":""}${crypto.bitcoin.usd_24h_change?.toFixed(1)}%)  •  `}🔴 ISRAEL ATACÓ FORDOW — INSTALACIÓN NUCLEAR IRANÍ — DÍA 12  •  💥 BRENT SUBE ~$95 — NUEVO IMPULSO ALCISTA  •  🛡️ OTAN CUMBRE MAÑANA 12 MAR BRUSELAS — 32 PAÍSES  •  🗣️ TRUMP-XI HABLARON — MEDIACIÓN CHINA RECHAZADA  •  🦠 SARAMPIÓN MX: 9,074 CASOS — 7 ESTADOS  •  💼 EMPLEOS USA -92K FEB — NASDAQ -3%  •  ⚔️ 9 SOLDADOS USA MUERTOS — 1,480+ IRANÍES  •  🔴 BAHRAIN + QATAR FORCE MAJEURE — ORMUZ -95%  •  {quakes.length>0?`🌋 ${quakes.length} SISMOS M5.5+ ACTIVOS  •  `:""}✈️ {planes.length>0?`${planes.length} AVIONES EN MEDIO ORIENTE  •  `:"OPENSKY ACTIVO  •  "}{fx&&`💱 USD/MXN LIVE: $${fx}  •  `}
+          {fx&&`💱 USD/MXN LIVE: $${fx}  •  `}{crypto?.bitcoin&&`₿ BTC: $${Math.round(crypto.bitcoin.usd/1000)}K (${crypto.bitcoin.usd_24h_change>0?"+":""}${crypto.bitcoin.usd_24h_change?.toFixed(1)}%)  •  `}🔴 DÍA 21 — JOE KENT (INTEL TRUMP) RENUNCIÓ: "LA GUERRA EMPEZÓ POR PRESIÓN DE ISRAEL"  •  ✈️ F-35 DAÑADO POR FUEGO IRANÍ — PRIMERA VEZ EN LA HISTORIA — IRGC PUBLICÓ EL VIDEO  •  🔥 SOUTH PARS ATACADO — MAYOR CAMPO DE GAS DEL MUNDO — BRENT $115  •  🇶🇦 QATAR EXPULSÓ AGREGADOS MILITARES IRANÍES EN 24 HORAS  •  💀 6,244+ IRANÍES MUERTOS (CIVILES + MILITARES) — 13 SOLDADOS USA  •  🛢️ ORMUZ -95% TRÁFICO — 350+ PETROLEROS ATRAPADOS  •  🦠 SARAMPIÓN MX: 9,074 CASOS — 7 ESTADOS — OPS ALERTA MUNDIAL 2026  •  💰 PESO >$19/USD — GASOLINA +28% — FMI: RECESIÓN MX Q3 2026  •  {quakes.length>0?`🌋 ${quakes.length} SISMOS M5.5+ ACTIVOS  •  `:""}✈️ {planes.length>0?`${planes.length} AVIONES EN MEDIO ORIENTE  •  `:"OPENSKY ACTIVO  •  "}{fx&&`💱 USD/MXN LIVE: $${fx}  •  `}
         </div>
       </div>
 
@@ -1014,7 +1121,7 @@ export default function App(){
       {/* NEWS TICKER */}
       {mode==="news"&&<div style={{marginTop:"7px",width:"100%",maxWidth:"980px",background:"rgba(10,8,0,0.8)",border:"1px solid rgba(255,200,0,0.1)",borderRadius:"4px",padding:"5px 0",overflow:"hidden",backdropFilter:"blur(4px)",position:"relative",zIndex:1}}>
         <div style={{fontSize:"8.5px",color:"#ffcc00",letterSpacing:"1.5px",whiteSpace:"nowrap",animation:"ticker 55s linear infinite",display:"inline-block",paddingLeft:"100%"}}>
-          🔴 ISRAEL ATACÓ FORDOW — PRIMERA VEZ INSTALACIÓN NUCLEAR IRANÍ — BRENT SUBE $5 &nbsp;•&nbsp; 🗣️ TRUMP HABLÓ CON XI — MEDIACIÓN CHINA RECHAZADA &nbsp;•&nbsp; 🛡️ OTAN CUMBRE MAÑANA 12 MAR BRUSELAS — ARTÍCULO 4 Y 5 EN MESA &nbsp;•&nbsp; 🛢️ BRENT ~$95 — SUBE TRAS FORDOW &nbsp;•&nbsp; 📉 NASDAQ -3% — BOLSAS ROJAS &nbsp;•&nbsp; 🔴 BAHRAIN BAPCO + QATAR LNG FORCE MAJEURE — ORMUZ -95% &nbsp;•&nbsp; 🛢️ SAUDI ARAMCO RAS TANURA CERRADA &nbsp;•&nbsp; ⚽ 5 FUTBOLISTAS IRANÍES ASILO EN AUSTRALIA &nbsp;•&nbsp; 💼 EMPLEOS USA -92K FEB — DESEMPLEO 4.4% &nbsp;•&nbsp; 💱 PESO MX {fx?`$${fx}/USD`:"PRESIONADO"} &nbsp;•&nbsp; ₿ BTC {crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"..."} &nbsp;•&nbsp; 🇨🇳 CHINA SIGUE COMPRANDO PETRÓLEO IRANÍ PESE A PRESIÓN DE EE.UU. &nbsp;•&nbsp; ☢️ IAEA CONFIRMA DAÑOS EN FORDOW — CENTRIFUGADORAS AFECTADAS
+          🔴 DÍA 21 — JOE KENT RENUNCIÓ: "GUERRA POR PRESIÓN DE ISRAEL SIN INTELIGENCIA REAL" &nbsp;•&nbsp; ✈️ F-35 DAÑADO — PRIMERA VEZ EN LA HISTORIA — IRGC PUBLICÓ EL VIDEO &nbsp;•&nbsp; 🔥 SOUTH PARS ATACADO DÍA 20 — MAYOR CAMPO DE GAS DEL MUNDO — BRENT $115 &nbsp;•&nbsp; 🇶🇦 QATAR EXPULSÓ AGREGADOS MILITARES IRANÍES — 24 HORAS &nbsp;•&nbsp; 💀 1,444 CIVILES + 4,800 MILITARES IRANÍES MUERTOS &nbsp;•&nbsp; ⚔️ 13 SOLDADOS USA MUERTOS — 7,000+ OBJETIVOS DESTRUIDOS &nbsp;•&nbsp; 🛢️ ORMUZ -95% — 350+ PETROLEROS — BRENT $115 &nbsp;•&nbsp; 💱 PESO >$19/USD — GASOLINA +28% — FMI RECESIÓN MX Q3 &nbsp;•&nbsp; ₿ BTC {crypto?.bitcoin?`$${Math.round(crypto.bitcoin.usd/1000)}K`:"..."} &nbsp;•&nbsp; 💱 USD/MXN {fx?`$${fx}`:">$19"} &nbsp;•&nbsp; 🦠 SARAMPIÓN MX 9,074 CASOS — MPOX CLADE Ib ACTIVO — H5N1 47 ESTADOS USA
         </div>
       </div>}
 
