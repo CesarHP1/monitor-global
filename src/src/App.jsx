@@ -60,7 +60,12 @@ const MODES = ["war","disease","climate","news"];
 const ACC  = { war:"#ff2020", disease:"#ff6600", climate:"#00aaff", news:"#ffcc00" };
 const BG   = { war:"#020508", disease:"#020a05", climate:"#020810", news:"#050400" };
 const GRID = { war:"#ff202008", disease:"#ff660008", climate:"#00aaff08", news:"#ffcc0008" };
-const TITLES = { war:"⚔️  CONFLICTOS GLOBALES — DÍA 20 — 19 MAR 2026", disease:"🦠  BROTES GLOBALES — OMS — 19 MAR 2026", climate:"🌍  CLIMA · SISMOS USGS · NOAA · NASA EONET", news:"📰  ECONOMÍA & MERCADOS — 19 MAR 2026" };
+const TITLES = { 
+  war:"⚔️  CONFLICTOS GLOBALES — DÍA 34 — 02 ABR 2026", 
+  disease:"🦠  BROTES GLOBALES — OMS — 02 ABR 2026", 
+  climate:"🌍  CLIMA · SISMOS USGS · NOAA · NASA EONET", 
+  news:"📰  ECONOMÍA & MERCADOS — 02 ABR 2026" 
+};
 const NEXT   = { war:"🦠 ENFERMEDADES", disease:"🌍 CLIMA", climate:"📰 ECONOMÍA", news:"⚔️ CONFLICTOS" };
 const STATUS_L = { guerra:"EN GUERRA", atacado:"BAJO ATAQUE", activo:"EN CURSO", tension:"EN TENSIÓN", critico:"CRÍTICO", alerta:"EN ALERTA", extremo:"EXTREMO" };
 
