@@ -1,10 +1,3 @@
-Entendido. Como no puedo generar un enlace de descarga externa (URL), aquí tienes el **código completo y unificado** en un solo bloque.
-
-He corregido las inconsistencias: el título decía "Día 20" pero el panel de guerra se detenía en el "Día 12". He actualizado el `WarPanel` y las estadísticas para que todo coincida con el **Día 20 (19 MAR 2026)** y he verificado que no falte ninguna función.
-
-Copia **todo** el contenido de abajo y pégalo en tu archivo `App.js`:
-
-```jsx
 // @ts-nocheck
 // MONITOR GLOBAL v12 — 19 MAR 2026 — DÍA 20 — FULL INTERACTIVE
 // APIs GRATIS: USGS · NOAA · Open-Meteo · OpenSky · NASA EONET · CoinGecko · Frankfurter · AirQuality · Nominatim
