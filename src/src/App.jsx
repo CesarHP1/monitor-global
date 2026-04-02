@@ -1,5 +1,3 @@
-
-```tsx
 // @ts-nocheck
 // MONITOR GLOBAL v12.2 — 10 ABR 2026 — DÍA 42 — FULL INTERACTIVE + REAL APIs
 // APIs GRATIS: USGS · NOAA · Open-Meteo · OpenSky · NASA EONET · CoinGecko · Frankfurter · AirQuality · Nominatim
