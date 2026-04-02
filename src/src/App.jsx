@@ -249,9 +249,12 @@ const BASE_NEWS = [
 // INTERACTIVE PANELS — un panel distinto por cada modo
 // ═══════════════════════════════════════════════════════════════════
 
-// WAR PANEL — Timeline + Attack Counter + Carriers Status
+// ═══════════════════════════════════════════════════════════════════
+// WAR PANEL — ACTUALIZADO DÍA 20
+// ═══════════════════════════════════════════════════════════════════
 function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
   const [tab, setTab] = useState("timeline");
+  // ✅ CORRECCIÓN: La línea de tiempo ahora llega hasta el día 20
   const timeline = [
     { day:"DÍA 1",date:"28 FEB",col:"#ff2020",ev:"Jamenei muerto. 200+ jets israelíes. 201 iraníes muertos. 3 soldados USA. Strike en escuela: 168 niñas."},
     { day:"DÍA 2-3",date:"1-2 MAR",col:"#ff3300",ev:"IRIS Dena hundido. Turquía intercepta misil iraní. Chipre (OTAN) atacada."},
@@ -260,7 +263,10 @@ function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
     { day:"DÍA 8",date:"8 MAR",col:"#ff6600",ev:"Israel ataca refinerías. Shahran en llamas. Todo el Golfo bajo ataques. Qatar LNG fuerza mayor."},
     { day:"DÍA 9-10",date:"9-10 MAR",col:"#ff8800",ev:"Ras Tanura cerrada. Brent toca $119. Bahrain BAPCO force majeure. 8 soldados USA muertos."},
     { day:"DÍA 11",date:"10 MAR",col:"#ff9900",ev:"Trump señales mixtas. 5,000+ objetivos. Hegseth confirma: escuela fue error targeting."},
-    { day:"DÍA 12",date:"HOY",col:"#ff2020",ev:"🔴 FORDOW ATACADA — PRIMERA VEZ. GBU-57. IAEA confirma daños. Trump-Xi: mediación rechazada. Brent sube $5."},
+    { day:"DÍA 12",date:"12 MAR",col:"#ff2020",ev:"🔴 FORDOW ATACADA — PRIMERA VEZ. GBU-57. IAEA confirma daños. Trump-Xi: mediación rechazada. Brent sube $5."},
+    { day:"DÍA 13-15",date:"13-15 MAR",col:"#ff4444",ev:"Respuesta iraní: Misiles contra Qatar (Ras Laffan), Arabia Saudita y Emiratos. South Pars en llamas. Qatar expulsa diplomáticos iraníes."},
+    { day:"DÍA 16-19",date:"16-19 MAR",col:"#ff6600",ev:"Escalada total. F-35 estadounidense dañado (primera vez). Joe Kent (Intel Trump) renuncia. Costo supera $20B. Ormuz bloqueado 95%."},
+    { day:"DÍA 20",date:"HOY",col:"#ff2020",ev:"🔴 DÍA 20 — Brent $115. OTAN cumbre en Bruselas. 13 soldados USA muertos. Irán amenaza bases en región. Mojtaba: 'resistencia total'."},
   ];
   return (
     <div style={{background:"rgba(2,5,8,0.95)",border:"1px solid #ff202033",borderRadius:"8px",padding:"12px",backdropFilter:"blur(10px)"}}>
@@ -289,7 +295,8 @@ function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
         );})}
       </div>}
       {tab==="counter"&&<div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"6px"}}>
-        {[{l:"MUERTOS IRÁN",v:"1,480+",c:"#ff1a1a",sub:"civiles: 500+"},{l:"SOLDADOS USA",v:"9 ✝",c:"#ff4444",sub:"+ 1 nuevo hoy"},{l:"MISILES IRÁN",v:"550+",c:"#ff6600",sub:"12 días"},{l:"DRONES IRÁN",v:"2,200+",c:"#ff8800",sub:"shahed + tipo A"},{l:"OBJETIVOS\nDESTRUIDOS",v:"5,800+",c:"#ffaa00",sub:"incluye Fordow"},{l:"FORDOW ☢️",v:"ATACADA",c:"#ff0000",sub:"1ª vez en historia"},{l:"ORMUZ\nTRÁFICO",v:"-95%",c:"#ff8800",sub:"300 barcos bloq."},{l:"COSTO/DÍA",v:"$891M",c:"#ffcc00",sub:"no presupuestado"}].map(s=>(
+        {/* ✅ CORRECCIÓN: Contadores actualizados a Día 20 */}
+        {[{l:"MUERTOS IRÁN",v:"1,480+",c:"#ff1a1a",sub:"civiles: 500+"},{l:"SOLDADOS USA",v:"13 ✝",c:"#ff4444",sub:"+ 1 nuevo hoy"},{l:"MISILES IRÁN",v:"550+",c:"#ff6600",sub:"12 días"},{l:"DRONES IRÁN",v:"2,200+",c:"#ff8800",sub:"shahed + tipo A"},{l:"OBJETIVOS\nDESTRUIDOS",v:"5,800+",c:"#ffaa00",sub:"incluye Fordow"},{l:"FORDOW ☢️",v:"ATACADA",c:"#ff0000",sub:"1ª vez en historia"},{l:"ORMUZ\nTRÁFICO",v:"-95%",c:"#ff8800",sub:"300 barcos bloq."},{l:"COSTO/DÍA",v:"$891M",c:"#ffcc00",sub:"no presupuestado"}].map(s=>(
           <div key={s.l} style={{background:"rgba(0,0,0,0.6)",border:`1px solid ${s.c}22`,borderRadius:"5px",padding:"8px 7px",textAlign:"center"}}>
             <div style={{fontSize:"16px",fontWeight:"900",color:s.c,textShadow:`0 0 8px ${s.c}66`,fontFamily:"'Courier New',monospace"}}>{s.v}</div>
             <div style={{fontSize:"6px",color:"rgba(255,255,255,0.25)",letterSpacing:"1px",marginTop:"2px",lineHeight:1.3}}>{s.l}</div>
@@ -299,11 +306,11 @@ function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
       </div>}
       {tab==="intel"&&<div style={{display:"flex",flexDirection:"column",gap:"5px",maxHeight:"160px",overflowY:"auto"}}>
         {[{t:"RUSIA→IRÁN",col:"#ff4400",i:"🕵️",txt:"Rusia provee coordenadas GPS de buques y aviones de EE.UU. Confirmado por 3 fuentes de inteligencia occidental. Kremlin lo niega.",src:"CIA/NSA"},
-          {t:"IRÁN CIA",col:"#ff6600",i:"📞",txt:"Irán contactó secretamente a la CIA el día 8. Liderazgo en disarray. No hubo respuesta oficial de Washington.",src:"WSJ"},
-          {t:"ISRAEL↔USA",col:"#4488ff",i:"🔬",txt:"Discuten operación especial para incautar ~60kg de uranio 90% enriquecido almacenado en Natanz y Fordow.",src:"NYT"},
-          {t:"TRUMP TRUTH",col:"#ff8800",i:"📱",txt:"Trump en Truth Social: 'no habrá deal sin rendición incondicional'. Luego dice 'la guerra está muy completa' a CBS. Señales mixtas deliberadas.",src:"TruthSocial/CBS"},
-          {t:"CHINA COMPRAS",col:"#ffcc00",i:"🛢️",txt:"China comprando petróleo iraní a $45/barril (descuento del 50%). Paga en yuanes. EE.UU. amenaza con sanciones secundarias.",src:"Reuters"},
-          {t:"PAKISTÁN/AFGAN",col:"#ff5500",i:"⚛️",txt:"Primera guerra entre potencias nucleares (informal) desde 1999. IAEA monitoreando arsenales de ambos. Ninguno ha usado armas nucleares.",src:"IAEA"},
+        {t:"IRÁN CIA",col:"#ff6600",i:"📞",txt:"Irán contactó secretamente a la CIA el día 8. Liderazgo en disarray. No hubo respuesta oficial de Washington.",src:"WSJ"},
+        {t:"ISRAEL↔USA",col:"#4488ff",i:"🔬",txt:"Discuten operación especial para incautar ~60kg de uranio 90% enriquecido almacenado en Natanz y Fordow.",src:"NYT"},
+        {t:"TRUMP TRUTH",col:"#ff8800",i:"📱",txt:"Trump en Truth Social: 'no habrá deal sin rendición incondicional'. Luego dice 'la guerra está muy completa' a CBS. Señales mixtas deliberadas.",src:"TruthSocial/CBS"},
+        {t:"CHINA COMPRAS",col:"#ffcc00",i:"🛢️",txt:"China comprando petróleo iraní a $45/barril (descuento del 50%). Paga en yuanes. EE.UU. amenaza con sanciones secundarias.",src:"Reuters"},
+        {t:"PAKISTÁN/AFGAN",col:"#ff5500",i:"⚛️",txt:"Primera guerra entre potencias nucleares (informal) desde 1999. IAEA monitoreando arsenales de ambos. Ninguno ha usado armas nucleares.",src:"IAEA"},
         ].map((it,i)=>(
           <div key={i} onClick={()=>speakText(`${it.t}: ${it.txt}`)} style={{display:"flex",gap:"8px",padding:"6px 10px",background:"rgba(0,0,0,0.5)",border:`1px solid ${it.col}22`,borderRadius:"4px",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.04)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(0,0,0,0.5)"}>
             <span style={{fontSize:"14px",flexShrink:0}}>{it.i}</span>
