@@ -257,16 +257,20 @@ const BASE_NEWS = [
 // WAR PANEL — Timeline + Attack Counter + Carriers Status
 function WarPanel({ carriers, cpos, attacks, planes, quakes, proj }) {
   const [tab, setTab] = useState("timeline");
-  const timeline = [
-    { day:"DÍA 1",date:"28 FEB",col:"#ff2020",ev:"Jamenei muerto. 200+ jets israelíes. 201 iraníes muertos. 3 soldados USA. Strike en escuela: 168 niñas."},
-    { day:"DÍA 2-3",date:"1-2 MAR",col:"#ff3300",ev:"IRIS Dena hundido. Turquía intercepta misil iraní. Chipre (OTAN) atacada."},
-    { day:"DÍA 4-5",date:"3-4 MAR",col:"#ff4400",ev:"Mojtaba Jamenei nuevo Líder Supremo. Rusia comienza apoyo intel a Irán."},
-    { day:"DÍA 6-7",date:"5-6 MAR",col:"#ff5500",ev:"France CDG en Mediterráneo. Maersk suspende Medio Oriente. Brent +27%."},
-    { day:"DÍA 8",date:"8 MAR",col:"#ff6600",ev:"Israel ataca refinerías. Shahran en llamas. Todo el Golfo bajo ataques. Qatar LNG fuerza mayor."},
-    { day:"DÍA 9-10",date:"9-10 MAR",col:"#ff8800",ev:"Ras Tanura cerrada. Brent toca $119. Bahrain BAPCO force majeure. 8 soldados USA muertos."},
-    { day:"DÍA 11",date:"10 MAR",col:"#ff9900",ev:"Trump señales mixtas. 5,000+ objetivos. Hegseth confirma: escuela fue error targeting."},
-    { day:"DÍA 12",date:"HOY",col:"#ff2020",ev:"🔴 FORDOW ATACADA — PRIMERA VEZ. GBU-57. IAEA confirma daños. Trump-Xi: mediación rechazada. Brent sube $5."},
-  ];
+const timeline = [
+  { day:"DÍA 1",date:"28 FEB",col:"#ff2020",ev:"Jamenei muerto. 200+ jets israelíes. 201 iraníes muertos. 3 soldados USA. Strike en escuela: 168 niñas."},
+  { day:"DÍA 2-3",date:"1-2 MAR",col:"#ff3300",ev:"IRIS Dena hundido. Turquía intercepta misil iraní. Chipre (OTAN) atacada."},
+  { day:"DÍA 4-5",date:"3-4 MAR",col:"#ff4400",ev:"Mojtaba Jamenei nuevo Líder Supremo. Rusia comienza apoyo intel a Irán."},
+  { day:"DÍA 6-7",date:"5-6 MAR",col:"#ff5500",ev:"France CDG en Mediterráneo. Maersk suspende Medio Oriente. Brent +27%."},
+  { day:"DÍA 8",date:"8 MAR",col:"#ff6600",ev:"Israel ataca refinerías. Shahran en llamas. Todo el Golfo bajo ataques. Qatar LNG fuerza mayor."},
+  { day:"DÍA 9-10",date:"9-10 MAR",col:"#ff8800",ev:"Ras Tanura cerrada. Brent toca $119. Bahrain BAPCO force majeure. 8 soldados USA muertos."},
+  { day:"DÍA 11",date:"10 MAR",col:"#ff9900",ev:"Trump señales mixtas. 5,000+ objetivos. Hegseth confirma: escuela fue error targeting."},
+  { day:"DÍA 12",date:"12 MAR",col:"#ff2020",ev:"🔴 FORDOW ATACADA — PRIMERA VEZ. GBU-57. IAEA confirma daños. Trump-Xi: mediación rechazada. Brent sube $5."},
+  { day:"DÍA 13-20",date:"13-20 MAR",col:"#ff4444",ev:"Misiles iraníes contra Qatar/Arabia/Emiratos. Ras Laffan dañado -17% LNG. Ormuz -95%. Brent oscila $108-115. 320+ orgs piden cese financiamiento."},
+  { day:"DÍA 21-30",date:"21-30 MAR",col:"#ff6600",ev:"Consolidación nuclear Israel. EE.UU. evalúa defensas OTAN. Pakistán ataca Afganistán día 8+. India evacua 18.5K."},
+  { day:"DÍA 31-33",date:"31 MAR-1 ABR",col:"#ff8800",ev:"Costo acumulado $35B+. Qatar fortifica Al Udeid. Alemania fondo €50B. Ibex recupera 4%."},
+  { day:"DÍA 34",date:"HOY",col:"#ff2020",ev:"🔴 DÍA 34 — Misiles balísticos Irán vs Golfo/Israel. Brent $112. Peso ~$19.5/USD. Sarampión 9 estados. Presión diplomática máxima."},
+];
   return (
     <div style={{background:"rgba(2,5,8,0.95)",border:"1px solid #ff202033",borderRadius:"8px",padding:"12px",backdropFilter:"blur(10px)"}}>
       <div style={{display:"flex",gap:"4px",marginBottom:"10px",borderBottom:"1px solid #ff202020",paddingBottom:"8px"}}>
